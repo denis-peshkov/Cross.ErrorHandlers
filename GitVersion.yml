@@ -20,7 +20,7 @@ branches:
     increment: Inherit
     source-branches:
       - master
-      - develop
+      - dev
       - release
     tag-number-pattern: '[/-](?<number>\d+)[-/]'
     prevent-increment-of-merged-branch-version: false
@@ -43,7 +43,7 @@ branches:
     tag: pr
     increment: Inherit
     source-branches:
-      - develop
+      - dev
       - master
       - release
       - feature

@@ -68,9 +68,9 @@ branches:
     mode: ContinuousDeployment
     tag: dev
     increment: Minor
-    source-branches: []
+    source-branches: [master]
     prevent-increment-of-merged-branch-version: false
     track-merge-target: true
     tracks-release-branches: true
     is-release-branch: false
-    pre-release-weight: 0
+    pre-release-weight: 40000

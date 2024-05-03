@@ -18,8 +18,8 @@
     <description>Written on C#.</description>
     <tags>NetCore</tags>
     <dependencies>
-      <dependency id="FluentValidation" version="11.8.1" />
-      <dependency id="FluentValidation.DependencyInjectionExtensions" version="11.8.1" />
+      <dependency id="FluentValidation" version="11.8.0" />
+      <dependency id="FluentValidation.DependencyInjectionExtensions" version="11.8.0" />
       <dependency id="MediatR.Contracts" version="1.0.1" />
       <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.9" />
       <dependency id="Microsoft.AspNetCore.Mvc.Core" version="2.2.5" />

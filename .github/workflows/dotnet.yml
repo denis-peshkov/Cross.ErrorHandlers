@@ -68,16 +68,13 @@ jobs:
 #      with:
 #        tag: v${{ env.semVer }}
 
-    - name: Name of
-      run: echo $ {{ github.ref }}
+    - name: ref
+      run: echo github.head_ref ${{github.head_ref}}
 
     - name: Create git tag
-      if:
-        contains('
-        origin/release
-        origin/hotfix
-        origin/master
-        ', github.ref)
+      if: contains(github.head_ref, 'release')
+        || contains(github.head_ref, 'hotfix')
+        || contains(github.head_ref, 'master')
       run: |
         git tag v${{ env.semVer }}
       #    - name: Push git tag

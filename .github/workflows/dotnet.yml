@@ -7,7 +7,7 @@ on:
   push:
     branches:
     - master
-    - develop
+    - dev
     - release/*
     - feature/*
   pull_request:

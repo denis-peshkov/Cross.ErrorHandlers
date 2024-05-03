@@ -72,6 +72,7 @@ jobs:
       if:
         contains('
         refs/heads/release
+        refs/heads/hotfix
         refs/heads/master
         ', github.ref)
       run: |
@@ -82,6 +83,7 @@ jobs:
       if:
         contains('
         refs/heads/release
+        refs/heads/hotfix
         refs/heads/master
         ', github.ref)
       run: |

@@ -80,11 +80,7 @@ jobs:
       #    - name: Push git tag
       #      run: git push origin v${{ env.semVer }}
     - name: Push git tag
-      if: contains('
-          refs/heads/release
-          refs/heads/hotfix
-          refs/heads/master
-          ', $GITHUB_REF)
+      if: contains(fromJson('["refs/heads/master", "refs/heads/release", "refs/heads/hotfix"]'), github.ref)
       run: |
         git config --global user.name 'Denis Peshkov'
         git config --global user.email 'denis.peshkov@outlook.com'

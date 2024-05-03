@@ -69,7 +69,7 @@ jobs:
 #        tag: v${{ env.semVer }}
 
     - name: ref
-      run: echo github.head_ref ${{github.head_ref}}
+      run: echo "github.head_ref ${{github.head_ref}} $GITHUB_REF"
 
     - name: Create git tag
       if: contains(github.head_ref, 'release')

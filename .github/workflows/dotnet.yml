@@ -71,9 +71,9 @@ jobs:
     - name: Create git tag
       if:
         contains('
-        refs/remotes/origin/release
-        refs/remotes/origin/hotfix
-        refs/remotes/origin/master
+        origin/release
+        origin/hotfix
+        origin/master
         ', github.ref)
       run: |
         git tag v${{ env.semVer }}
@@ -82,9 +82,9 @@ jobs:
     - name: Push git tag
       if:
         contains('
-        refs/remotes/origin/release
-        refs/remotes/origin/hotfix
-        refs/remotes/origin/master
+        origin/release
+        origin/hotfix
+        origin/master
         ', github.ref)
       run: |
         git config --global user.name 'Denis Peshkov'

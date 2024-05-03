@@ -1,6 +1,6 @@
 next-version: 7.0.0 #
 branches:
-  main:
+  master:
     regex: ^master$|^main$
     mode: ContinuousDelivery
     tag: ''
@@ -63,12 +63,12 @@ branches:
     track-merge-target: false
     tracks-release-branches: false
     is-release-branch: false
-  develop:
+  dev:
     regex: ^dev(elop)?(ment)?$
     mode: ContinuousDeployment
     tag: dev
     increment: Minor
-    source-branches: []
+    source-branches: [master]
     prevent-increment-of-merged-branch-version: false
     track-merge-target: true
     tracks-release-branches: true

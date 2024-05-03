@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>11</LangVersion>
+    <Nullable>enable</Nullable>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>AnyCPU</Platforms>
+    <NoWarn>1701;1702;1591</NoWarn>
+  </PropertyGroup>
+
+  <Target Name="DeleteBinObjFolders" BeforeTargets="Clean">
+    <RemoveDir Directories=".\bin" />
+  </Target>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.8.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.8.1" />
+    <PackageReference Include="MediatR.Contracts" Version="1.0.1" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Toolkit.Diagnostics" Version="7.1.2" />
+    <PackageReference Include="System.Text.Json" Version="7.0.4" />
+  </ItemGroup>
+
+</Project>

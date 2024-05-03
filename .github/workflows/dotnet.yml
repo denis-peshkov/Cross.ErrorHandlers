@@ -84,7 +84,7 @@ jobs:
           refs/heads/release
           refs/heads/hotfix
           refs/heads/master
-          ', GITHUB_REF)
+          ', $GITHUB_REF)
       run: |
         git config --global user.name 'Denis Peshkov'
         git config --global user.email 'denis.peshkov@outlook.com'

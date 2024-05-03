@@ -69,7 +69,7 @@ jobs:
 #        tag: v${{ env.semVer }}
 
     - name: Name of
-      run: github.ref
+      run: echo github.ref
 
     - name: Create git tag
       if:

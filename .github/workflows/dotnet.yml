@@ -68,11 +68,21 @@ jobs:
 #        tag: v${{ env.semVer }}
 
     - name: Create git tag
+      if:
+        contains('
+        refs/heads/release
+        refs/heads/master
+        ', github.ref)
       run: |
         git tag v${{ env.semVer }}
-#    - name: Push git tag
-#      run: git push origin v${{ env.semVer }}
+      #    - name: Push git tag
+      #      run: git push origin v${{ env.semVer }}
     - name: Push git tag
+      if:
+        contains('
+        refs/heads/release
+        refs/heads/master
+        ', github.ref)
       run: |
         git config --global user.name 'Denis Peshkov'
         git config --global user.email 'denis.peshkov@outlook.com'

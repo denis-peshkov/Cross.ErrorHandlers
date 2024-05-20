@@ -19,13 +19,9 @@
     <tags>NetCore</tags>
     <dependencies>
       <dependency id="FluentValidation" version="11.8.0" />
-      <dependency id="FluentValidation.DependencyInjectionExtensions" version="11.8.0" />
       <dependency id="MediatR.Contracts" version="1.0.1" />
-      <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.9" />
       <dependency id="Microsoft.AspNetCore.Mvc.Core" version="2.2.5" />
       <dependency id="Microsoft.Extensions.Hosting.Abstractions" version="7.0.0" />
-      <dependency id="Microsoft.Toolkit.Diagnostics" version="7.1.2" />
-      <dependency id="System.Text.Json" version="7.0.4" />
     </dependencies>
   </metadata>
   <files>

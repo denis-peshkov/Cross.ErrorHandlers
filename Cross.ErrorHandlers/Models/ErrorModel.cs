@@ -6,14 +6,14 @@ public class ErrorModel
 
     public string Code { get; set; }
 
+    public string? SubCode { get; set; }
+
     public string? Message { get; set; }
 
     /// <summary>
     /// Detailed error list
     /// </summary>
     public IDictionary<string, IEnumerable<string>>? Errors { get; set; }
-
-    public ErrorModel() { }
 
     public ErrorModel(string code, string message)
     {
@@ -24,6 +24,14 @@ public class ErrorModel
     public ErrorModel(string code, string message, IDictionary<string, IEnumerable<string>> errors)
     {
         Code = code;
+        Message = message;
+        Errors = errors;
+    }
+
+    public ErrorModel(string code, string subCode, string message, IDictionary<string, IEnumerable<string>> errors)
+    {
+        Code = code;
+        SubCode = subCode;
         Message = message;
         Errors = errors;
     }

@@ -8,6 +8,8 @@ public class ErrorHandlerMiddleware
 
     private readonly ILogger<ErrorHandlerMiddleware> _logger;
 
+    private const string EXCEPTION_TITLE = "Exception";
+
     public ErrorHandlerMiddleware(
         RequestDelegate next,
         IHostEnvironment env,
@@ -18,7 +20,7 @@ public class ErrorHandlerMiddleware
         _logger = logger;
     }
 
-    public async Task Invoke(HttpContext httpContext)
+    public async Task InvokeAsync(HttpContext httpContext)
     {
         try
         {
@@ -26,7 +28,7 @@ public class ErrorHandlerMiddleware
         }
         catch (ValidationException ex)
         {
-            LogInternalServerWarning(ex, httpContext);
+            LogInternalServerError(ex, httpContext);
 
             var errors = ex.Errors
                 .GroupBy(o => o.PropertyName)
@@ -39,7 +41,8 @@ public class ErrorHandlerMiddleware
                     code: ErrorCodeEnum.InvalidParameters.ToString(),
                     message: "Validation error from the custom middleware",
                     errors: errors
-                ));
+                ),
+                HttpStatusCode.NotAcceptable);
         }
         catch (InvalidOperationException ex)
         {
@@ -51,7 +54,7 @@ public class ErrorHandlerMiddleware
                 (
                     code: ErrorCodeEnum.InvalidOperation.ToString(),
                     message: ex.Message,
-                    errors: new Dictionary<string, IEnumerable<string>>() { { "Exception", new[] { ex.ToString() } } }
+                    errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ));
         }
         catch (NotFoundException ex)
@@ -64,7 +67,7 @@ public class ErrorHandlerMiddleware
                 (
                     code: ErrorCodeEnum.NotFound.ToString(),
                     message: ex.Message,
-                    errors: new Dictionary<string, IEnumerable<string>>() { { "Exception", new[] { ex.ToString() } } }
+                    errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ));
         }
         catch (ConflictException ex)
@@ -76,8 +79,11 @@ public class ErrorHandlerMiddleware
                 new ErrorModel
                 (
                     code: ErrorCodeEnum.Conflict.ToString(),
+                    subCode: ex.Data.Contains("SubCode")
+                        ? ex.Data["SubCode"]?.ToString()
+                        : null,
                     message: ex.Message,
-                    errors: new Dictionary<string, IEnumerable<string>>() { { "Exception", new[] { ex.ToString() } } }
+                    errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ));
         }
         catch (BadRequestException ex)
@@ -90,7 +96,7 @@ public class ErrorHandlerMiddleware
                 (
                     code: ErrorCodeEnum.BadRequest.ToString(),
                     message: ex.Message,
-                    errors: new Dictionary<string, IEnumerable<string>>() { { "Exception", new[] { ex.ToString() } } }
+                    errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ));
         }
         catch (NotAuthorizedException ex)
@@ -103,8 +109,23 @@ public class ErrorHandlerMiddleware
                 (
                     code: ErrorCodeEnum.NotAuthorized.ToString(),
                     message: ex.Message,
-                    errors: new Dictionary<string, IEnumerable<string>>() { { "Exception", new[] { ex.ToString() } } }
-                ));
+                    errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
+                ),
+                HttpStatusCode.Unauthorized);
+        }
+        catch (ForbiddenException ex)
+        {
+            LogInternalServerError(ex, httpContext);
+
+            await HandleExceptionAsync(
+                httpContext,
+                new ErrorModel
+                (
+                    code: ErrorCodeEnum.Forbidden.ToString(),
+                    message: ex.Message,
+                    errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
+                ),
+                HttpStatusCode.Forbidden);
         }
         catch (IdentityUserManagerException ex)
         {
@@ -116,7 +137,7 @@ public class ErrorHandlerMiddleware
                 (
                     code: ErrorCodeEnum.UnauthorizedClient.ToString(),
                     message: ex.Message,
-                    errors: new Dictionary<string, IEnumerable<string>>() { { "Exception", new[] { ex.ToString() } } }
+                    errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ),
                 HttpStatusCode.InternalServerError);
         }
@@ -131,7 +152,7 @@ public class ErrorHandlerMiddleware
                 (
                     code: ErrorCodeEnum.InvalidClient.ToString(),
                     message: ex.Message,
-                    errors: new Dictionary<string, IEnumerable<string>>() { { "Exception", new[] { ex.ToString() } } }
+                    errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ));
         }
         catch (ImageNotFoundException ex)
@@ -144,7 +165,7 @@ public class ErrorHandlerMiddleware
                 (
                     code: ErrorCodeEnum.ImageNotFound.ToString(),
                     message: ex.Message,
-                    errors: new Dictionary<string, IEnumerable<string>>() { { "Exception", new[] { ex.ToString() } } }
+                    errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ));
         }
         catch (Exception ex)
@@ -157,7 +178,7 @@ public class ErrorHandlerMiddleware
                 (
                     code: ErrorCodeEnum.InternalServerError.ToString(),
                     message: "Internal Server Error from the custom middleware",
-                    errors: new Dictionary<string, IEnumerable<string>>() { { "Exception", new[] { ex.ToString() } } }
+                    errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ),
                 HttpStatusCode.InternalServerError);
         }
@@ -170,7 +191,7 @@ public class ErrorHandlerMiddleware
 
         errorModel.CorrelationId = GetCorrelationId(context);
 
-        if (_env.IsProduction())
+        if (_env.IsProduction() && statusCode != HttpStatusCode.NotAcceptable)
         {
             errorModel.Errors = new Dictionary<string, IEnumerable<string>>();
         }
@@ -208,7 +229,7 @@ public class ErrorHandlerMiddleware
 
         if (!Guid.TryParse(correlationId, out var result))
         {
-            result = Guid.Empty;
+            result = Guid.NewGuid();
         }
 
         return result;

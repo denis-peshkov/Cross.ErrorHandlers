@@ -15,6 +15,8 @@ public class ErrorModel
     /// </summary>
     public IDictionary<string, IEnumerable<string>>? Errors { get; set; }
 
+    public ErrorModel() { }
+
     public ErrorModel(string code, string message)
     {
         Code = code;

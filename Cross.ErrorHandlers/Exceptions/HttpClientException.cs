@@ -8,7 +8,7 @@ public class HttpClientException : Exception
     {
     }
 
-    public HttpClientException(ErrorModel errorModel)
+    public HttpClientException(ErrorModel errorModel) : base(errorModel.Message)
     {
         Error = errorModel;
     }

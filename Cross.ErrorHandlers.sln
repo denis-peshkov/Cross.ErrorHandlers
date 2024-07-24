@@ -28,6 +28,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{AA2BFFF4-1DD3-421A-B46D-884CEA961271}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonEncoding", "JsonEncoding\JsonEncoding.csproj", "{94E9FA8E-A83D-45A6-A033-74A4540B882A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,12 +42,17 @@ Global
 		{EAF0AC39-A26A-4432-8EA0-F1C9C01E3B06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EAF0AC39-A26A-4432-8EA0-F1C9C01E3B06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EAF0AC39-A26A-4432-8EA0-F1C9C01E3B06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94E9FA8E-A83D-45A6-A033-74A4540B882A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94E9FA8E-A83D-45A6-A033-74A4540B882A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94E9FA8E-A83D-45A6-A033-74A4540B882A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94E9FA8E-A83D-45A6-A033-74A4540B882A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3AC16548-8159-430E-8F1E-0F3806247B45} = {9E7AF015-44E3-4CB2-A1C2-A00A33C16ED7}
+		{94E9FA8E-A83D-45A6-A033-74A4540B882A} = {AA2BFFF4-1DD3-421A-B46D-884CEA961271}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {25728519-5F0F-4973-8A64-0A81EB4EA8D9}

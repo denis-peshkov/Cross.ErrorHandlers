@@ -198,7 +198,8 @@ public class ErrorHandlerMiddleware
 
         var jsonSerializerOptions = new JsonSerializerOptions
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         };
 
         await JsonSerializer.SerializeAsync(context.Response.Body, new ApiEnvelope<object>(errorModel), jsonSerializerOptions);

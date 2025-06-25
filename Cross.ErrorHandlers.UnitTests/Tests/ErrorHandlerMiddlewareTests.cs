@@ -212,4 +212,271 @@ public class ErrorHandlerMiddlewareTests : TestsBase
         errorModel.Should().NotBeNull();
         errorModel!.CorrelationId.Should().Be(correlationId);
     }
+
+    [Test]
+    public async Task InvokeAsync_WhenJsonException_ReturnsNotAcceptable()
+    {
+        // Arrange
+        var message = "Invalid JSON format";
+        var exception = new JsonException(message);
+
+        _middleware = new ErrorHandlerMiddleware(
+            next: (ctx) => throw exception,
+            _mockEnv.Object,
+            _mockLogger.Object,
+            Configuration
+        );
+
+        // Act
+        await _middleware.InvokeAsync(_context);
+
+        // Assert
+        _context.Response.StatusCode.Should().Be((int)HttpStatusCode.NotAcceptable);
+        _context.Response.ContentType.Should().Be("application/json");
+
+        _context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var response = await JsonSerializer.DeserializeAsync<ApiEnvelope<object>>(
+            _context.Response.Body,
+            ErrorHandlerMiddleware.JsonCamelCaseSerializerOptions
+        );
+
+        var errorModel = response!.Error;
+        errorModel.Should().NotBeNull();
+        errorModel!.Code.Should().Be(ErrorCodeEnum.InvalidParameters.ToString());
+        errorModel.Message.Should().Be("Validation error from the custom middleware");
+        errorModel.Errors.Should().ContainKey("Exception");
+        errorModel.Errors["Exception"].Should().Contain(message);
+    }
+
+    [Test]
+    public async Task InvokeAsync_WhenInvalidOperationException_ReturnsBadRequest()
+    {
+        // Arrange
+        var message = "Invalid operation performed";
+        var exception = new InvalidOperationException(message);
+
+        _middleware = new ErrorHandlerMiddleware(
+            next: (ctx) => throw exception,
+            _mockEnv.Object,
+            _mockLogger.Object,
+            Configuration
+        );
+
+        // Act
+        await _middleware.InvokeAsync(_context);
+
+        // Assert
+        _context.Response.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+
+        _context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var response = await JsonSerializer.DeserializeAsync<ApiEnvelope<object>>(
+            _context.Response.Body,
+            ErrorHandlerMiddleware.JsonCamelCaseSerializerOptions
+        );
+
+        var errorModel = response!.Error;
+        errorModel.Should().NotBeNull();
+        errorModel!.Code.Should().Be(ErrorCodeEnum.InvalidOperation.ToString());
+        errorModel.Message.Should().Be(message);
+    }
+
+    [Test]
+    public async Task InvokeAsync_WhenConflictException_ReturnsBadRequest()
+    {
+        // Arrange
+        var message = "Resource conflict";
+        var subCode = "DuplicateEntry";
+        var exception = new ConflictException(message, subCode);
+
+        _middleware = new ErrorHandlerMiddleware(
+            next: (ctx) => throw exception,
+            _mockEnv.Object,
+            _mockLogger.Object,
+            Configuration
+        );
+
+        // Act
+        await _middleware.InvokeAsync(_context);
+
+        // Assert
+        _context.Response.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+
+        _context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var response = await JsonSerializer.DeserializeAsync<ApiEnvelope<object>>(
+            _context.Response.Body,
+            ErrorHandlerMiddleware.JsonCamelCaseSerializerOptions
+        );
+
+        var errorModel = response!.Error;
+        errorModel.Should().NotBeNull();
+        errorModel!.Code.Should().Be(ErrorCodeEnum.Conflict.ToString());
+        errorModel.Message.Should().Be(message);
+        errorModel.SubCode.Should().Be(subCode);
+    }
+
+    [Test]
+    public async Task InvokeAsync_WhenBadRequestException_ReturnsBadRequest()
+    {
+        // Arrange
+        var message = "Bad request error";
+        var exception = new BadRequestException(message);
+
+        _middleware = new ErrorHandlerMiddleware(
+            next: (ctx) => throw exception,
+            _mockEnv.Object,
+            _mockLogger.Object,
+            Configuration
+        );
+
+        // Act
+        await _middleware.InvokeAsync(_context);
+
+        // Assert
+        _context.Response.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+
+        _context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var response = await JsonSerializer.DeserializeAsync<ApiEnvelope<object>>(
+            _context.Response.Body,
+            ErrorHandlerMiddleware.JsonCamelCaseSerializerOptions
+        );
+
+        var errorModel = response!.Error;
+        errorModel.Should().NotBeNull();
+        errorModel!.Code.Should().Be(ErrorCodeEnum.BadRequest.ToString());
+        errorModel.Message.Should().Be(message);
+    }
+
+    [Test]
+    public async Task InvokeAsync_WhenForbiddenException_ReturnsForbidden()
+    {
+        // Arrange
+        var message = "Access forbidden";
+        var exception = new ForbiddenException(message);
+
+        _middleware = new ErrorHandlerMiddleware(
+            next: (ctx) => throw exception,
+            _mockEnv.Object,
+            _mockLogger.Object,
+            Configuration
+        );
+
+        // Act
+        await _middleware.InvokeAsync(_context);
+
+        // Assert
+        _context.Response.StatusCode.Should().Be((int)HttpStatusCode.Forbidden);
+
+        _context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var response = await JsonSerializer.DeserializeAsync<ApiEnvelope<object>>(
+            _context.Response.Body,
+            ErrorHandlerMiddleware.JsonCamelCaseSerializerOptions
+        );
+
+        var errorModel = response!.Error;
+        errorModel.Should().NotBeNull();
+        errorModel!.Code.Should().Be(ErrorCodeEnum.Forbidden.ToString());
+        errorModel.Message.Should().Be(message);
+    }
+
+    [Test]
+    public async Task InvokeAsync_WhenIdentityUserManagerException_ReturnsInternalServerError()
+    {
+        // Arrange
+        var message = "Identity operation failed";
+        var exception = new IdentityUserManagerException(message);
+
+        _middleware = new ErrorHandlerMiddleware(
+            next: (ctx) => throw exception,
+            _mockEnv.Object,
+            _mockLogger.Object,
+            Configuration
+        );
+
+        // Act
+        await _middleware.InvokeAsync(_context);
+
+        // Assert
+        _context.Response.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+
+        _context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var response = await JsonSerializer.DeserializeAsync<ApiEnvelope<object>>(
+            _context.Response.Body,
+            ErrorHandlerMiddleware.JsonCamelCaseSerializerOptions
+        );
+
+        var errorModel = response!.Error;
+        errorModel.Should().NotBeNull();
+        errorModel!.Code.Should().Be(ErrorCodeEnum.UnauthorizedClient.ToString());
+        errorModel.Message.Should().Be(message);
+    }
+
+    [Test]
+    public async Task InvokeAsync_WhenHttpClientException_ReturnsBadRequest()
+    {
+        // Arrange
+        var message = "HTTP client error";
+        var errorDetails = new Dictionary<string, IEnumerable<string>>
+        {
+            { "field1", new[] { "Error 1" } },
+            { "field2", new[] { "Error 2" } }
+        };
+        var errorModel = new ErrorModel(ErrorCodeEnum.InvalidClient.ToString(), message, null, errorDetails);
+        var exception = new HttpClientException(message, errorModel);
+
+        _middleware = new ErrorHandlerMiddleware(
+            next: (ctx) => throw exception,
+            _mockEnv.Object,
+            _mockLogger.Object,
+            Configuration
+        );
+
+        // Act
+        await _middleware.InvokeAsync(_context);
+
+        // Assert
+        _context.Response.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+
+        _context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var response = await JsonSerializer.DeserializeAsync<ApiEnvelope<object>>(
+            _context.Response.Body,
+            ErrorHandlerMiddleware.JsonCamelCaseSerializerOptions
+        );
+
+        var responseError = response!.Error;
+        responseError.Should().NotBeNull();
+        responseError!.Code.Should().Be(ErrorCodeEnum.InvalidClient.ToString());
+        responseError.Message.Should().Be("Error 1\nError 2");
+    }
+
+    [Test]
+    public async Task InvokeAsync_WhenImageNotFoundException_ReturnsBadRequest()
+    {
+        // Arrange
+        var message = "Image not found";
+        var exception = new ImageNotFoundException(message);
+
+        _middleware = new ErrorHandlerMiddleware(
+            next: (ctx) => throw exception,
+            _mockEnv.Object,
+            _mockLogger.Object,
+            Configuration
+        );
+
+        // Act
+        await _middleware.InvokeAsync(_context);
+
+        // Assert
+        _context.Response.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+
+        _context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var response = await JsonSerializer.DeserializeAsync<ApiEnvelope<object>>(
+            _context.Response.Body,
+            ErrorHandlerMiddleware.JsonCamelCaseSerializerOptions
+        );
+
+        var errorModel = response!.Error;
+        errorModel.Should().NotBeNull();
+        errorModel!.Code.Should().Be(ErrorCodeEnum.ImageNotFound.ToString());
+        errorModel.Message.Should().Be(message);
+    }
 }

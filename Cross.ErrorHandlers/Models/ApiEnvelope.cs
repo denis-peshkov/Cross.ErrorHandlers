@@ -1,4 +1,4 @@
-namespace Cross.ErrorHandlers.Models;
+﻿namespace Cross.ErrorHandlers.Models;
 
 public class ApiEnvelope : ApiEnvelope<Unit>
 {

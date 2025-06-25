@@ -1,25 +1,51 @@
 ﻿namespace Cross.ErrorHandlers.Middleware;
 
+/// <summary>
+/// Middleware that handles exceptions globally and converts them into standardized JSON responses.
+/// </summary>
+/// <remarks>
+/// This middleware should be registered early in the ASP.NET Core pipeline to catch all exceptions.
+/// It provides consistent error handling across the application with proper HTTP status codes
+/// and formatted JSON responses.
+/// </remarks>
 public class ErrorHandlerMiddleware
 {
+    private const string EXCEPTION_TITLE = "Exception";
+
     private readonly RequestDelegate _next;
 
     private readonly IHostEnvironment _env;
 
     private readonly ILogger<ErrorHandlerMiddleware> _logger;
 
-    private const string EXCEPTION_TITLE = "Exception";
+    private readonly IConfiguration _configuration;
 
+    public static JsonSerializerOptions JsonCamelCaseSerializerOptions { get; } = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ErrorHandlerMiddleware"/> class.
+    /// </summary>
+    /// <param name="next">The next middleware delegate in the pipeline.</param>
+    /// <param name="env">The hosting environment.</param>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="configuration">The configuration instance.</param>
     public ErrorHandlerMiddleware(
         RequestDelegate next,
         IHostEnvironment env,
-        ILogger<ErrorHandlerMiddleware> logger)
+        ILogger<ErrorHandlerMiddleware> logger,
+        IConfiguration configuration)
     {
         _next = next;
         _env = env;
         _logger = logger;
+        _configuration = configuration;
     }
 
+    /// <summary>
+    /// Processes an HTTP request by trying to execute the next middleware delegate and catching any exceptions.
+    /// </summary>
+    /// <param name="context">The HTTP context for the request.</param>
+    /// <returns>A task that represents the completion of request processing.</returns>
     public async Task InvokeAsync(HttpContext httpContext)
     {
         try
@@ -41,6 +67,20 @@ public class ErrorHandlerMiddleware
                     code: ErrorCodeEnum.InvalidParameters.ToString(),
                     message: "Validation error from the custom middleware",
                     errors: errors
+                ),
+                HttpStatusCode.NotAcceptable);
+        }
+        catch (JsonException ex)
+        {
+            LogInternalServerError(ex, httpContext);
+
+            await HandleExceptionAsync(
+                httpContext,
+                new ErrorModel
+                (
+                    code: ErrorCodeEnum.InvalidParameters.ToString(),
+                    message: "Validation error from the custom middleware",
+                    errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.Message } } }
                 ),
                 HttpStatusCode.NotAcceptable);
         }
@@ -79,9 +119,7 @@ public class ErrorHandlerMiddleware
                 new ErrorModel
                 (
                     code: ErrorCodeEnum.Conflict.ToString(),
-                    subCode: ex.Data.Contains("SubCode")
-                        ? ex.Data["SubCode"]?.ToString()
-                        : null,
+                    subCode: ex.Data["SubCode"]?.ToString(),
                     message: ex.Message,
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ));
@@ -145,19 +183,24 @@ public class ErrorHandlerMiddleware
         {
             // do not log message again, already logged into some microservice
 
+            var message = ex.Error != null
+                ? ex.Error.Errors != null
+                    ? string.Join("\n", ex.Error.Errors.Values.SelectMany(v => v))
+                    : ex.Message
+                : ex.Message;
+
             await HandleExceptionAsync(
                 httpContext,
-                ex.Error ??
                 new ErrorModel
                 (
                     code: ErrorCodeEnum.InvalidClient.ToString(),
-                    message: ex.Message,
-                    errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
+                    message: message,
+                    errors: null
                 ));
         }
         catch (ImageNotFoundException ex)
         {
-            // do not log message
+            // do not log the message
 
             await HandleExceptionAsync(
                 httpContext,
@@ -191,34 +234,18 @@ public class ErrorHandlerMiddleware
 
         errorModel.CorrelationId = GetCorrelationId(context);
 
-        if (_env.IsProduction() && statusCode != HttpStatusCode.NotAcceptable)
+        var clearStackTraceErrors = _configuration.GetValue<bool>("ClearStackTraceErrors");
+
+        if (clearStackTraceErrors && statusCode != HttpStatusCode.NotAcceptable)
         {
             errorModel.Errors = new Dictionary<string, IEnumerable<string>>();
         }
 
-        var jsonSerializerOptions = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-        };
-
-        await JsonSerializer.SerializeAsync(context.Response.Body, new ApiEnvelope<object>(errorModel), jsonSerializerOptions);
+        await JsonSerializer.SerializeAsync(context.Response.Body, new ApiEnvelope<object>(errorModel), JsonCamelCaseSerializerOptions);
     }
 
     private void LogInternalServerError(Exception ex, HttpContext context)
-    {
-        _logger.LogError(ex, "{CorrelationId} {ExceptionType}: {ExceptionMessage}", GetCorrelationId(context), ex.GetType(), ex.Message);
-    }
-
-    private void LogInternalServerWarning(Exception ex, HttpContext context)
-    {
-        _logger.LogWarning(ex, "{CorrelationId} {ExceptionType}: {ExceptionMessage}", GetCorrelationId(context), ex.GetType(), ex.Message);
-    }
-
-    private void LogInternalServerWarning(ValidationException ex, HttpContext context)
-    {
-        _logger.LogWarning(ex, "{CorrelationId} {ExceptionType}: {ExceptionMessage} {@ExceptionErrors}", GetCorrelationId(context), ex.GetType(), ex.Message, ex.Errors);
-    }
+        => _logger.LogError(ex, "{CorrelationId} {ExceptionType}: {Message}", GetCorrelationId(context), ex.GetType(), ex.Message);
 
     private static Guid GetCorrelationId(HttpContext context)
     {
@@ -236,7 +263,7 @@ public class ErrorHandlerMiddleware
         return result;
     }
 
-    private static T? GetFirstHeaderValueOrDefault<T>(IReadOnlyDictionary<string, StringValues> headers, string headerKey)
+    private static T? GetFirstHeaderValueOrDefault<T>(Dictionary<string, StringValues> headers, string headerKey)
     {
         var toReturn = default(T);
 

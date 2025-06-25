@@ -1,5 +1,13 @@
 ﻿namespace Cross.ErrorHandlers.Middleware;
 
+/// <summary>
+/// Middleware that handles exceptions globally and converts them into standardized JSON responses.
+/// </summary>
+/// <remarks>
+/// This middleware should be registered early in the ASP.NET Core pipeline to catch all exceptions.
+/// It provides consistent error handling across the application with proper HTTP status codes
+/// and formatted JSON responses.
+/// </remarks>
 public class ErrorHandlerMiddleware
 {
     private readonly RequestDelegate _next;
@@ -12,6 +20,13 @@ public class ErrorHandlerMiddleware
 
     public static JsonSerializerOptions JsonCamelCaseSerializerOptions { get; } = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ErrorHandlerMiddleware"/> class.
+    /// </summary>
+    /// <param name="next">The next middleware delegate in the pipeline.</param>
+    /// <param name="env">The hosting environment.</param>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="configuration">The configuration instance.</param>
     public ErrorHandlerMiddleware(
         RequestDelegate next,
         IHostEnvironment env,
@@ -24,6 +39,11 @@ public class ErrorHandlerMiddleware
         _configuration = configuration;
     }
 
+    /// <summary>
+    /// Processes an HTTP request by trying to execute the next middleware delegate and catching any exceptions.
+    /// </summary>
+    /// <param name="context">The HTTP context for the request.</param>
+    /// <returns>A task that represents the completion of request processing.</returns>
     public async Task InvokeAsync(HttpContext httpContext)
     {
         try

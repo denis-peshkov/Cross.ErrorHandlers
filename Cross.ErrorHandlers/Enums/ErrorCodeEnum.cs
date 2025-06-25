@@ -1,5 +1,8 @@
 ﻿namespace Cross.ErrorHandlers.Enums;
 
+/// <summary>
+/// Defines the standardized error codes used across the application.
+/// </summary>
 public enum ErrorCodeEnum
 {
     AccessDenied = 1,

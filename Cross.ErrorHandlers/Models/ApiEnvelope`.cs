@@ -3,12 +3,12 @@
 public class ApiEnvelope<T>
 {
     /// <summary>
-    /// An array of the type found in type
+    /// Gets or sets the data payload if the request was successful.
     /// </summary>
     public T? Data { get; set; }
 
     /// <summary>
-    /// Detailed error list
+    /// Gets or sets the error details if an error occurred.
     /// </summary>
     public ErrorModel? Error { get; set; }
 

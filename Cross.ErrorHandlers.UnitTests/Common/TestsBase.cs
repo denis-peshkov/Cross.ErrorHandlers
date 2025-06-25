@@ -1,19 +1,17 @@
-﻿namespace Cross.WebHost.AvailabilityCheck.UnitTests.Common;
+﻿namespace Cross.ErrorHandlers.UnitTests.Common;
 
 [TestFixture]
 public abstract class TestsBase
 {
     protected IConfiguration Configuration;
 
-    [SetUp]
+    [OneTimeSetUp]
     public virtual void OneTimeSetUp()
     {
-
         Configuration = LoadConfiguration();
     }
 
-    [TearDown]
-    // [OneTimeTearDown]
+    [OneTimeTearDown]
     public virtual void OneTimeTearDown()
     {
     }

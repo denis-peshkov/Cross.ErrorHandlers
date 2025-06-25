@@ -26,7 +26,7 @@
 - Improved class structure for better extensibility
 
 ### Tests
-- Added IntegrationTests
+- Added IntegrTests
 
 ## 7.2.0 - 24 Jul 2024
 - Remove character escaping from json output as plain text

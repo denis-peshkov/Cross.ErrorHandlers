@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFrameworks>net7.0;net8.0;</TargetFrameworks>
     <ImplicitUsings>disable</ImplicitUsings>
     <LangVersion>11</LangVersion>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
     <NoWarn>1701;1702;1591</NoWarn>
@@ -16,9 +17,17 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.8.0" />
-    <PackageReference Include="MediatR.Contracts" Version="1.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
+    <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
+
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.0" />
+<!--    <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.4.0" />-->
+<!--    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />-->
+<!--    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />-->
+<!--    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />-->
+<!--    <PackageReference Include="Microsoft.Toolkit.Diagnostics" Version="7.1.2" />-->
+<!--    <PackageReference Include="System.Text.Json" Version="8.0.5" />-->
   </ItemGroup>
 
 </Project>

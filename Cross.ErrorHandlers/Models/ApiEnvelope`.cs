@@ -2,12 +2,6 @@
 
 public class ApiEnvelope<T>
 {
-    public ApiEnvelope() {}
-
-    public ApiEnvelope(T? data) => Data = data;
-
-    public ApiEnvelope(ErrorModel? error) => Error = error;
-
     /// <summary>
     /// An array of the type found in type
     /// </summary>
@@ -17,4 +11,10 @@ public class ApiEnvelope<T>
     /// Detailed error list
     /// </summary>
     public ErrorModel? Error { get; set; }
+
+    public ApiEnvelope() { }
+
+    public ApiEnvelope(T? data) => Data = data;
+
+    public ApiEnvelope(ErrorModel? error) => Error = error;
 }

@@ -22,7 +22,7 @@ jobs:
       BUILD_CONFIG: 'Release'
       SOLUTION: 'Cross.ErrorHandlers.sln'
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04 # ubuntu-latest
 
     steps:
       - name: Checkout
@@ -57,8 +57,29 @@ jobs:
       - name: Run tests
         run: dotnet test /p:Configuration=$BUILD_CONFIG --no-restore --no-build --verbosity normal
 
+      - name: SonarQube Scan
+        uses: sonarsource/sonarcloud-github-action@v5 # Ex: v4.0.0, See the latest version at https://github.com/marketplace/actions/sonarcloud-scan
+        with:
+          #          projectBaseDir: app/
+          #          args: >
+          #            -Dsonar.organization=peshkov
+          #            -Dsonar.projectKey=Cross.ErrorHandlers.EF
+          #            -Dsonar.python.coverage.reportPaths=coverage.xml
+          #            -Dsonar.sources=Cross.ErrorHandlers.EF/
+          #            -Dsonar.tests=tests/
+          #            -Dsonar.test.exclusions=tests/**
+          #            -Dsonar.verbose=true
+          args: >
+            -Dsonar.organization=peshkov
+            -Dsonar.projectKey=Cross.ErrorHandlers
+            -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.sources=Cross.ErrorHandlers/
+            -Dsonar.verbose=true
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
       - name: Nuget Pack
-        run: nuget pack _nuget/config.nuspec -Symbols -Version ${{ env.semVer }}
+        run: nuget pack Cross.ErrorHandlers/config.nuspec -Symbols -Version ${{ env.semVer }}
 
       - name: ref
         run: echo "github.head_ref 1 ${{ github.head_ref }} 2 $GITHUB_REF 3 ${{ github.ref }}"

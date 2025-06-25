@@ -1,4 +1,4 @@
-﻿namespace Cross.ErrorHandlers;
+﻿namespace Cross.ErrorHandlers.Enums;
 
 public enum ErrorCodeEnum
 {

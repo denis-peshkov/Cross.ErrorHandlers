@@ -1,27 +1,27 @@
-[![Nuget](https://img.shields.io/nuget/v/Cross.ErrorHandlers.svg)](https://nuget.org/packages/Cross.ErrorHandlers/) [![Documentation](https://img.shields.io/badge/docs-wiki-yellow.svg)](https://github.com/denis-peshkov/Cross.ErrorHandlers/wiki)
-
-# Cross.ErrorHandlers
+# Cross.ErrorHandlers [![Nuget](https://img.shields.io/nuget/v/Cross.ErrorHandlers.svg)](https://nuget.org/packages/Cross.ErrorHandlers/) [![Documentation](https://img.shields.io/badge/docs-wiki-yellow.svg)](https://github.com/denis-peshkov/Cross.ErrorHandlers/wiki)
 
 A .NET library providing unified error handling for ASP.NET Core applications. The package implements middleware that catches exceptions and transforms them into standardized JSON responses with proper HTTP status codes.
 
-## Key Features:
-- Global exception handling middleware
-- Standardized error response format
-- Built-in support for common exception types
-- Request correlation tracking
-- Configurable stack trace visibility
-- Consistent logging
+**Target frameworks:** `net7.0`, `net8.0`
+
+## Key Features
+
+- Global exception handling middleware (`ErrorHandlerMiddleware`)
+- Responses wrapped in `ApiEnvelope` with an `error` payload (`ErrorModel`)
+- Built-in handling for FluentValidation `ValidationException`, `JsonException`, and library-specific exception types
+- Request correlation ID (`X-Correlation-Id` header or generated GUID)
+- Configurable clearing of the `errors` dictionary via `ClearStackTraceErrors` (see below)
+- Optional `IInternalServerLogger` to customize how caught exceptions are logged
 
 ## Purpose
+
 Designed to streamline error handling across microservices and web applications while maintaining proper error tracking and debugging capabilities.
 
-## Install with nuget.org:
+## Install with nuget.org
 
 https://www.nuget.org/packages/Cross.ErrorHandlers
 
 ## Installation
-
-Install via NuGet Package Manager:
 
 ```bash
 dotnet add package Cross.ErrorHandlers
@@ -35,7 +35,7 @@ Install-Package Cross.ErrorHandlers
 
 ## Quick Start
 
-1. Register the middleware in your `Program.cs` or `Startup.cs`:
+Register the middleware early in the pipeline (typically before other middleware that might throw):
 
 ```csharp
 public class Program
@@ -48,53 +48,63 @@ public class Program
 
         var app = builder.Build();
 
-        // Add error handler middleware (should be first in the pipeline)
         app.UseMiddleware<ErrorHandlerMiddleware>();
 
-        // Other middleware configurations...
+        // Other middleware...
 
         app.Run();
     }
 }
 ```
 
-2. The middleware will automatically catch exceptions and return standardized responses.
+The middleware resolves `ILogger<ErrorHandlerMiddleware>` and `IConfiguration` from the request services / app configuration.
 
 ## Error Response Format
 
-All errors are returned in a consistent JSON format:
+Errors are serialized as camelCase JSON. The body is an `ApiEnvelope` object: the failure details live under `error` (`ErrorModel`).
 
 ```json
 {
-  "code": "errorCode",
-  "message": "Error description",
-  "correlationId": "00000000-0000-0000-0000-000000000000",
-  "errors": {
-    "field1": ["Error message 1", "Error message 2"],
-    "field2": ["Error message 3"]
+  "data": null,
+  "error": {
+    "correlationId": "00000000-0000-0000-0000-000000000000",
+    "code": "errorCode",
+    "subCode": null,
+    "message": "Error description",
+    "errors": {
+      "field1": ["Error message 1"],
+      "Exception": ["Full exception text when details are retained"]
+    }
   }
 }
 ```
 
+`subCode` is set when a `ConflictException` carries a sub-code (via `Data["SubCode"]`).
+
 ## Supported Exception Types
 
-The middleware handles various exception types with appropriate HTTP status codes:
+| Exception type                 | HTTP status | Error code (`ErrorCodeEnum`) |
+|--------------------------------|-------------|------------------------------|
+| `ValidationException`          | 406         | `InvalidParameters`          |
+| `JsonException`                | 406         | `InvalidParameters`          |
+| `InvalidOperationException`    | 400         | `InvalidOperation`           |
+| `NotFoundException`            | 400         | `NotFound`                   |
+| `ConflictException`            | 400         | `Conflict`                   |
+| `BadRequestException`          | 400         | `BadRequest`                 |
+| `NotAuthorizedException`       | 401         | `NotAuthorized`              |
+| `ForbiddenException`           | 403         | `Forbidden`                  |
+| `IdentityUserManagerException` | 500   | `UnauthorizedClient`         |
+| `HttpClientException`          | 400         | `InvalidClient`              |
+| `ImageNotFoundException`       | 400         | `ImageNotFound`              |
+| `Exception` (default)          | 500         | `InternalServerError`        |
 
-| Exception Type         | HTTP Status Code | Error Code          |
-|------------------------|------------------|---------------------|
-| ValidationException    | 406              | InvalidParameters   |
-| JsonException          | 406              | InvalidParameters   |
-| NotFoundException      | 404              | NotFound            |
-| ConflictException      | 409              | Conflict            |
-| BadRequestException    | 400              | BadRequest          |
-| NotAuthorizedException | 401              | NotAuthorized       |
-| ForbiddenException     | 403              | Forbidden           |
-| HttpClientException    | 400              | InvalidClient       |
-| Exception (default)    | 500              | InternalServerError |
+`NotFoundException`, `HttpClientException`, and `ImageNotFoundException` are not logged again by the middleware (treated as already expected or logged upstream). All other handled types use either `IInternalServerLogger` (if registered) or `ILogger<ErrorHandlerMiddleware>`.
 
 ## Configuration
 
-Configure stack trace visibility in `appsettings.json`:
+`ClearStackTraceErrors` (boolean, from configuration): when `true`, the middleware replaces `error.errors` with an empty object for every response **except** those with status **406** (`NotAcceptable`), where validation/JSON error details are always kept.
+
+Example `appsettings.json`:
 
 ```json
 {
@@ -102,13 +112,17 @@ Configure stack trace visibility in `appsettings.json`:
 }
 ```
 
-## Correlation ID Tracking
+Set to `false` to keep the populated `errors` dictionary (e.g. exception details) on other status codes.
 
-The middleware automatically handles correlation IDs:
+## Correlation ID
 
-1. Reads from `X-Correlation-Id` header if provided
-2. Generates new GUID if not present
-3. Includes in error responses for request tracking
+1. If the request includes a valid GUID in the `X-Correlation-Id` header, that value is used.
+2. Otherwise a new GUID is generated.
+3. The value is set on the returned `error.correlationId`.
+
+## Custom exception logging
+
+Register an implementation of `Cross.ErrorHandlers.Logging.IInternalServerLogger` in DI. When present, it receives `LogInternalServerError` for exception paths that the middleware logs; if absent, the default `ILogger<ErrorHandlerMiddleware>` is used.
 
 ## Custom Exception Example
 
@@ -126,22 +140,28 @@ public class YourController : ControllerBase
 }
 ```
 
-Response when item not found:
+Example response when the item is not found (shape and status as produced by the current middleware):
 
 ```json
 {
-  "code": "NotFound",
-  "message": "Item with id 123 not found",
-  "correlationId": "7b2ab0e6-3c42-4488-a8b5-9b6d15b63e1a",
-  "errors": {
-    "Exception": ["NotFoundException: Item with id 123 not found"]
+  "data": null,
+  "error": {
+    "code": "NotFound",
+    "subCode": null,
+    "message": "Item with id 123 not found",
+    "correlationId": "7b2ab0e6-3c42-4488-a8b5-9b6d15b63e1a",
+    "errors": {
+      "Exception": ["NotFoundException: Item with id 123 not found"]
+    }
   }
 }
 ```
 
-## Issues and Pull Request
+HTTP status for this case is **400** unless you change the middleware.
 
-Contribution is welcomed. If you would like to provide a PR please add some testing.
+## Issues and Pull Requests
+
+Contributions are welcome. Please include tests with substantive changes.
 
 ## Contributing
 
@@ -153,6 +173,4 @@ Contribution is welcomed. If you would like to provide a PR please add some test
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Roadmap
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.

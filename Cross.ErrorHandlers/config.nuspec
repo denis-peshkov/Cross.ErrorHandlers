@@ -31,10 +31,11 @@
     <tags>dotnet aspnetcore middleware error-handling exception-handling error-middleware csharp json microservices logging correlation-id nuget-package error-tracking debugging web-api</tags>
     <dependencies>
       <dependency id="FluentValidation" version="11.8.0" />
-      <dependency id="MediatR.Contracts" version="2.0.1" />
-      <dependency id="Microsoft.AspNetCore.Mvc.Core" version="2.3.0" />
+      <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="2.3.0" />
+      <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="8.0.0" />
       <dependency id="Microsoft.Extensions.Configuration.Binder" version="8.0.2" />
-      <dependency id="Microsoft.Extensions.Hosting.Abstractions" version="8.0.1" />
+      <dependency id="Microsoft.Extensions.DependencyInjection" version="8.0.1" />
+      <dependency id="Microsoft.Extensions.Logging.Abstractions" version="8.0.2" />
     </dependencies>
   </metadata>
   <files>

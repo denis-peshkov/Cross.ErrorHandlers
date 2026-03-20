@@ -1,4 +1,4 @@
-﻿namespace Cross.ErrorHandlers.Middleware;
+namespace Cross.ErrorHandlers.Middleware;
 
 /// <summary>
 /// Middleware that handles exceptions globally and converts them into standardized JSON responses.
@@ -13,11 +13,8 @@ public class ErrorHandlerMiddleware
     private const string EXCEPTION_TITLE = "Exception";
 
     private readonly RequestDelegate _next;
-
     private readonly IHostEnvironment _env;
-
     private readonly ILogger<ErrorHandlerMiddleware> _logger;
-
     private readonly IConfiguration _configuration;
 
     public static JsonSerializerOptions JsonCamelCaseSerializerOptions { get; } = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
@@ -245,7 +242,16 @@ public class ErrorHandlerMiddleware
     }
 
     private void LogInternalServerError(Exception ex, HttpContext context)
-        => _logger.LogError(ex, "{CorrelationId} {ExceptionType}: {Message}", GetCorrelationId(context), ex.GetType(), ex.Message);
+    {
+        var customLogger = context.RequestServices?.GetService<IInternalServerLogger>();
+        if (customLogger != null)
+        {
+            customLogger.LogInternalServerError(ex, context);
+            return;
+        }
+
+        _logger.LogError(ex, "{CorrelationId} {ExceptionType}: {Message}", GetCorrelationId(context), ex.GetType(), ex.Message);
+    }
 
     private static Guid GetCorrelationId(HttpContext context)
     {

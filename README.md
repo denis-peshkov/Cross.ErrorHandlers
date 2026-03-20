@@ -2,7 +2,7 @@
 
 A .NET library providing unified error handling for ASP.NET Core applications. The package implements middleware that catches exceptions and transforms them into standardized JSON responses with proper HTTP status codes.
 
-**Target frameworks:** `net7.0`, `net8.0`
+**Target frameworks:** `net6.0`, `net7.0`, `net8.0`, `net9.0`, `net10.0`
 
 ## Key Features
 
@@ -17,20 +17,16 @@ A .NET library providing unified error handling for ASP.NET Core applications. T
 
 Designed to streamline error handling across microservices and web applications while maintaining proper error tracking and debugging capabilities.
 
-## Install with nuget.org
+## Install NuGet package
 
-https://www.nuget.org/packages/Cross.ErrorHandlers
-
-## Installation
-
-```bash
-dotnet add package Cross.ErrorHandlers
-```
-
-Or via Package Manager Console:
+Install the package _Cross.ErrorHandlers_ [NuGet package](https://www.nuget.org/packages/Cross.ErrorHandlers/) into your ASP.NET Core project:
 
 ```powershell
 Install-Package Cross.ErrorHandlers
+```
+or
+```bash
+dotnet add package Cross.ErrorHandlers
 ```
 
 ## Quick Start
@@ -57,7 +53,7 @@ public class Program
 }
 ```
 
-The middleware resolves `ILogger<ErrorHandlerMiddleware>` and `IConfiguration` from the request services / app configuration.
+The middleware constructor is satisfied from DI: `RequestDelegate`, `IHostEnvironment`, `ILogger<ErrorHandlerMiddleware>`, and `IConfiguration` (same as other ASP.NET Core middleware).
 
 ## Error Response Format
 
@@ -93,18 +89,18 @@ Errors are serialized as camelCase JSON. The body is an `ApiEnvelope` object: th
 | `BadRequestException`          | 400         | `BadRequest`                 |
 | `NotAuthorizedException`       | 401         | `NotAuthorized`              |
 | `ForbiddenException`           | 403         | `Forbidden`                  |
-| `IdentityUserManagerException` | 500   | `UnauthorizedClient`         |
+| `IdentityUserManagerException` | 500         | `UnauthorizedClient`         |
 | `HttpClientException`          | 400         | `InvalidClient`              |
 | `ImageNotFoundException`       | 400         | `ImageNotFound`              |
 | `Exception` (default)          | 500         | `InternalServerError`        |
 
-`NotFoundException`, `HttpClientException`, and `ImageNotFoundException` are not logged again by the middleware (treated as already expected or logged upstream). All other handled types use either `IInternalServerLogger` (if registered) or `ILogger<ErrorHandlerMiddleware>`.
+`NotFoundException`, `HttpClientException`, and `ImageNotFoundException` are not logged again by the middleware (treated as already expected or logged upstream). All other handled types follow the same logging path as in [Custom exception logging](#custom-exception-logging): `IInternalServerLogger` from `RequestServices` when resolvable, otherwise `ILogger<ErrorHandlerMiddleware>`.
 
 ## Configuration
 
-`ClearStackTraceErrors` (boolean, from configuration): when `true`, the middleware replaces `error.errors` with an empty object for every response **except** those with status **406** (`NotAcceptable`), where validation/JSON error details are always kept.
+`ClearStackTraceErrors` is read with `IConfiguration.GetValue<bool>("ClearStackTraceErrors")`. When `true`, the middleware replaces `error.errors` with an empty object for every response **except** those with status **406** (`NotAcceptable`), where validation/JSON error details are always kept. When the key is missing, the value defaults to `false`.
 
-Example `appsettings.json`:
+Example `appsettings.json` (omit the key or set `false` to keep exception detail entries in `errors` for non-406 responses):
 
 ```json
 {
@@ -122,7 +118,7 @@ Set to `false` to keep the populated `errors` dictionary (e.g. exception details
 
 ## Custom exception logging
 
-Register an implementation of `Cross.ErrorHandlers.Logging.IInternalServerLogger` in DI. When present, it receives `LogInternalServerError` for exception paths that the middleware logs; if absent, the default `ILogger<ErrorHandlerMiddleware>` is used.
+Register an implementation of `Cross.ErrorHandlers.Logging.IInternalServerLogger` in DI. For each logged exception path, the middleware resolves `IInternalServerLogger` from `HttpContext.RequestServices` when that provider is non-null; otherwise it falls back to `ILogger<ErrorHandlerMiddleware>`.
 
 ## Custom Exception Example
 

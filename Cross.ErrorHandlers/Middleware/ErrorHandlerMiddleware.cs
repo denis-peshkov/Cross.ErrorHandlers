@@ -41,7 +41,7 @@ public class ErrorHandlerMiddleware
     /// <summary>
     /// Processes an HTTP request by trying to execute the next middleware delegate and catching any exceptions.
     /// </summary>
-    /// <param name="context">The HTTP context for the request.</param>
+    /// <param name="httpContext">The HTTP context for the request.</param>
     /// <returns>A task that represents the completion of request processing.</returns>
     public async Task InvokeAsync(HttpContext httpContext)
     {

@@ -244,8 +244,8 @@ public class ErrorHandlerMiddlewareTests : TestsBase
         errorModel.Should().NotBeNull();
         errorModel!.Code.Should().Be(ErrorCodeEnum.InvalidParameters.ToString());
         errorModel.Message.Should().Be("Validation error from the custom middleware");
-        errorModel.Errors.Should().ContainKey("Exception");
-        errorModel.Errors["Exception"].Should().Contain(message);
+        errorModel.Errors.Should().NotBeNull().And.ContainKey("Exception");
+        errorModel.Errors!["Exception"].Should().Contain(message);
     }
 
     [Test]
@@ -420,7 +420,7 @@ public class ErrorHandlerMiddlewareTests : TestsBase
             { "field1", new[] { "Error 1" } },
             { "field2", new[] { "Error 2" } }
         };
-        var errorModel = new ErrorModel(ErrorCodeEnum.InvalidClient.ToString(), message, null, errorDetails);
+        var errorModel = new ErrorModel(ErrorCodeEnum.InvalidClient.ToString(), subCode: null, message, errorDetails);
         var exception = new HttpClientException(message, errorModel);
 
         _middleware = new ErrorHandlerMiddleware(

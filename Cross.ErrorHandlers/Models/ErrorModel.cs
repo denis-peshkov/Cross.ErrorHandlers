@@ -39,14 +39,14 @@ public class ErrorModel
         Message = message;
     }
 
-    public ErrorModel(string code, string message, IDictionary<string, IEnumerable<string>> errors)
+    public ErrorModel(string code, string message, IDictionary<string, IEnumerable<string>>? errors)
     {
         Code = code;
         Message = message;
         Errors = errors;
     }
 
-    public ErrorModel(string code, string? subCode, string message, IDictionary<string, IEnumerable<string>> errors)
+    public ErrorModel(string code, string? subCode, string message, IDictionary<string, IEnumerable<string>>? errors)
     {
         Code = code;
         SubCode = subCode;

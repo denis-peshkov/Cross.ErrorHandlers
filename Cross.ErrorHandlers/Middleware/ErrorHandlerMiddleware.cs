@@ -13,11 +13,8 @@ public class ErrorHandlerMiddleware
     private const string EXCEPTION_TITLE = "Exception";
 
     private readonly RequestDelegate _next;
-
     private readonly IHostEnvironment _env;
-
     private readonly ILogger<ErrorHandlerMiddleware> _logger;
-
     private readonly IConfiguration _configuration;
 
     public static JsonSerializerOptions JsonCamelCaseSerializerOptions { get; } = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
@@ -44,7 +41,7 @@ public class ErrorHandlerMiddleware
     /// <summary>
     /// Processes an HTTP request by trying to execute the next middleware delegate and catching any exceptions.
     /// </summary>
-    /// <param name="context">The HTTP context for the request.</param>
+    /// <param name="httpContext">The HTTP context for the request.</param>
     /// <returns>A task that represents the completion of request processing.</returns>
     public async Task InvokeAsync(HttpContext httpContext)
     {
@@ -245,7 +242,16 @@ public class ErrorHandlerMiddleware
     }
 
     private void LogInternalServerError(Exception ex, HttpContext context)
-        => _logger.LogError(ex, "{CorrelationId} {ExceptionType}: {Message}", GetCorrelationId(context), ex.GetType(), ex.Message);
+    {
+        var customLogger = context.RequestServices?.GetService<IInternalServerLogger>();
+        if (customLogger != null)
+        {
+            customLogger.LogInternalServerError(ex, context);
+            return;
+        }
+
+        _logger.LogError(ex, "{CorrelationId} {ExceptionType}: {Message}", GetCorrelationId(context), ex.GetType(), ex.Message);
+    }
 
     private static Guid GetCorrelationId(HttpContext context)
     {

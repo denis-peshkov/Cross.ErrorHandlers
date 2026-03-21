@@ -33,7 +33,12 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: |
+            6.0.x
+            7.0.x
+            8.0.x
+            9.0.x
+            10.0.x
 
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v2.0.0
@@ -52,7 +57,20 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build $SOLUTION --configuration $BUILD_CONFIG --no-restore
+        run: |
+          dotnet build "$SOLUTION" --configuration "$BUILD_CONFIG" --no-restore \
+          -p:Configuration=$BUILD_CONFIG \
+          -p:Version=${GitVersion_SemVer} \
+          -p:AssemblyVersion=${GitVersion_AssemblySemVer} \
+          -p:FileVersion=${GitVersion_AssemblySemFileVer} \
+          -p:InformationalVersion="${GitVersion_InformationalVersion}" \
+          -p:Company="Denis Peshkov" \
+          -p:Product="Cross.ErrorHandlers" \
+          -p:Description="A .NET library providing unified error handling for ASP.NET Core applications. The package implements middleware that catches exceptions and transforms them into standardized JSON responses with proper HTTP status codes." \
+          -p:RepositoryUrl="https://github.com/denis-peshkov/Cross.ErrorHandlers.git" \
+          -p:RepositoryType=git \
+          -p:CLSCompliant=true \
+          -p:NeutralLanguage=en
 
       - name: Run tests
         run: dotnet test /p:Configuration=$BUILD_CONFIG --no-restore --no-build --verbosity normal

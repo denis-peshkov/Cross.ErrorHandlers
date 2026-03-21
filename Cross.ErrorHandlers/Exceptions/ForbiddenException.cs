@@ -1,4 +1,4 @@
-namespace Cross.ErrorHandlers.Exceptions;
+﻿namespace Cross.ErrorHandlers.Exceptions;
 
 /// <summary>
 /// Represents errors that occur when a user is authenticated but not authorized to access a resource.

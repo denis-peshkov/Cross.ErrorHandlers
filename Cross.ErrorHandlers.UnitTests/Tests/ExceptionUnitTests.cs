@@ -1,4 +1,4 @@
-namespace Cross.ErrorHandlers.UnitTests.Tests;
+﻿namespace Cross.ErrorHandlers.UnitTests.Tests;
 
 [TestFixture]
 public class ExceptionsTests
@@ -74,7 +74,7 @@ public class ExceptionsTests
         // Assert
         exception.Message.Should().Be(message);
         exception.InnerException.Should().Be(innerException);
-        exception.InnerException.Message.Should().Be(innerException.Message);
+        exception.InnerException!.Message.Should().Be(innerException.Message);
     }
 
     [Test]
@@ -100,7 +100,7 @@ public class ExceptionsTests
         // Assert
         exception.Message.Should().Be(resultMessage);
         exception.InnerException.Should().Be(innerException);
-        exception.InnerException.Message.Should().Be(innerException.Message);;
+        exception.InnerException!.Message.Should().Be(innerException.Message);
     }
 
     [Test]

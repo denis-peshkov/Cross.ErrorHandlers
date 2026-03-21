@@ -12,16 +12,16 @@
     <repository type="git" url="https://github.com/denis-peshkov/Cross.ErrorHandlers" />
     <readme>docs\README.md</readme>
     <icon>icon.png</icon>
-    <releaseNotes>
-      - Optional `IInternalServerLogger` in DI: middleware calls `LogInternalServerError` on your implementation when registered; otherwise falls back to `ILogger&lt;ErrorHandlerMiddleware&gt;`.
-      - Library targets `net6.0`, `net7.0`, `net8.0`, `net9.0`, `net10.0` (previously `net7.0` / `net8.0` only).
-      - Replaced `Microsoft.AspNetCore.Mvc.Core` with `Microsoft.AspNetCore.Http.Abstractions` and explicit `Microsoft.Extensions.*` packages; FluentValidation updated to `11.12.0`.
-      - Added `Microsoft.SourceLink.GitHub` for debugging (symbols).
-      - Packaged assemblies for `net6.0`, `net9.0`, `net10.0`; nuspec dependencies and copyright aligned with the project.
-      - README updated: `ApiEnvelope` / `ErrorModel`, features, configuration (`ClearStackTraceErrors`), correlation ID, exception table, custom logging.
-      - Extended middleware unit tests (correlation ID, `ClearStackTraceErrors`, `IInternalServerLogger`, `HttpClientException` paths, `ConflictException`); added `ModelsTests` for `ApiEnvelope` and `ErrorModel`.
-      - GitHub Actions: `setup-dotnet` installs SDK bands `6.0.x`–`10.0.x` to match target frameworks.
-    </releaseNotes>
+    <releaseNotes><![CDATA[
+- Optional `IInternalServerLogger` in DI: middleware calls `LogInternalServerError` on your implementation when registered; otherwise falls back to `ILogger&lt;ErrorHandlerMiddleware&gt;`.
+- Library targets `net6.0`, `net7.0`, `net8.0`, `net9.0`, `net10.0` (previously `net7.0` / `net8.0` only).
+- Replaced `Microsoft.AspNetCore.Mvc.Core` with `Microsoft.AspNetCore.Http.Abstractions` and explicit `Microsoft.Extensions.*` packages; FluentValidation updated to `11.12.0`.
+- Added `Microsoft.SourceLink.GitHub` for debugging (symbols).
+- Packaged assemblies for `net6.0`, `net9.0`, `net10.0`; nuspec dependencies and copyright aligned with the project.
+- README updated: `ApiEnvelope` / `ErrorModel`, features, configuration (`ClearStackTraceErrors`), correlation ID, exception table, custom logging.
+- Extended middleware unit tests (correlation ID, `ClearStackTraceErrors`, `IInternalServerLogger`, `HttpClientException` paths, `ConflictException`); added `ModelsTests` for `ApiEnvelope` and `ErrorModel`.
+- GitHub Actions: `setup-dotnet` installs SDK bands `6.0.x`–`10.0.x` to match target frameworks.
+]]></releaseNotes>
     <description>
       A .NET library providing unified error handling for ASP.NET Core applications. The package implements middleware that catches exceptions and transforms them into standardized JSON responses with proper HTTP status codes.
 

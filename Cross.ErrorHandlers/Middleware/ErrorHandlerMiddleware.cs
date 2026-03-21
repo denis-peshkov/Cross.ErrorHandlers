@@ -1,4 +1,4 @@
-namespace Cross.ErrorHandlers.Middleware;
+﻿namespace Cross.ErrorHandlers.Middleware;
 
 /// <summary>
 /// Middleware that handles exceptions globally and converts them into standardized JSON responses.

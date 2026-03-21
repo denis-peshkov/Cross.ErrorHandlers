@@ -1,1 +1,1 @@
-[assembly: InternalsVisibleTo("Cross.ErrorHandlers.UnitTests")]
+﻿[assembly: InternalsVisibleTo("Cross.ErrorHandlers.UnitTests")]

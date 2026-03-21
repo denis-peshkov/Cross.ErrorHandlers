@@ -1,4 +1,4 @@
-namespace JsonEncoding;
+﻿namespace JsonEncoding;
 
 public class ResponseObject
 {

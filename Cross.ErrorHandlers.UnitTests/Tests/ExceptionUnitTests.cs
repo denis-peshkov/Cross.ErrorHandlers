@@ -1,4 +1,4 @@
-namespace Cross.ErrorHandlers.UnitTests.Tests;
+﻿namespace Cross.ErrorHandlers.UnitTests.Tests;
 
 [TestFixture]
 public class ExceptionsTests

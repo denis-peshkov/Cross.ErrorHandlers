@@ -31,7 +31,7 @@ dotnet add package Cross.ErrorHandlers
 
 ## Quick Start
 
-Register the middleware early in the pipeline (typically before other middleware that might throw):
+1. Register the middleware early in the pipeline (typically before other middleware that might throw):
 
 ```csharp
 public class Program
@@ -53,7 +53,7 @@ public class Program
 }
 ```
 
-The middleware constructor is satisfied from DI: `RequestDelegate`, `IHostEnvironment`, `ILogger<ErrorHandlerMiddleware>`, and `IConfiguration` (same as other ASP.NET Core middleware).
+2. The middleware will automatically catch exceptions and return standardized responses.
 
 ## Error Response Format
 
@@ -161,11 +161,12 @@ Contributions are welcome. Please include tests with substantive changes.
 
 ## Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. Fork the repository on GitHub (creates a copy under your account).
+2. Clone **your fork** locally (`git clone https://github.com/<your-username>/Cross.ErrorHandlers.git`).
+3. Create a feature branch from the default branch (`git switch -c feature/amazing-feature`).
+4. Commit your changes (`git commit -m 'Add some amazing feature'`).
+5. Push the branch to **your fork** (`git push -u origin feature/amazing-feature`).
+6. Open a Pull Request from your fork’s feature branch into this repository’s default branch.
 
 ## License
 

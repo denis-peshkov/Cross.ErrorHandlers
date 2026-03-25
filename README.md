@@ -1,4 +1,19 @@
-# Cross.ErrorHandlers [![Nuget](https://img.shields.io/nuget/v/Cross.ErrorHandlers.svg)](https://nuget.org/packages/Cross.ErrorHandlers/) [![Documentation](https://img.shields.io/badge/docs-wiki-yellow.svg)](https://github.com/denis-peshkov/Cross.ErrorHandlers/wiki)
+[![License](https://img.shields.io/github/license/denis-peshkov/Cross.ErrorHandlers)](LICENSE)
+[![GitHub Release Date](https://img.shields.io/github/release-date/denis-peshkov/Cross.ErrorHandlers?label=released)](https://github.com/denis-peshkov/Cross.ErrorHandlers/releases)
+[![NuGetVersion](https://img.shields.io/nuget/v/Cross.ErrorHandlers.svg)](https://nuget.org/packages/Cross.ErrorHandlers/)
+[![NugetDownloads](https://img.shields.io/nuget/dt/Cross.ErrorHandlers.svg)](https://nuget.org/packages/Cross.ErrorHandlers/)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Cross.ErrorHandlers&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Cross.ErrorHandlers)
+[![issues](https://img.shields.io/github/issues/denis-peshkov/Cross.ErrorHandlers)](https://github.com/denis-peshkov/Cross.ErrorHandlers/issues)
+[![.NET PR](https://github.com/denis-peshkov/Cross.ErrorHandlers/actions/workflows/dotnet.yml/badge.svg?event=pull_request)](https://github.com/denis-peshkov/Cross.ErrorHandlers/actions/workflows/dotnet.yml)
+
+![Size](https://img.shields.io/github/repo-size/denis-peshkov/Cross.ErrorHandlers)
+[![GitHub contributors](https://img.shields.io/github/contributors/denis-peshkov/Cross.ErrorHandlers)](https://github.com/denis-peshkov/Cross.ErrorHandlers/contributors)
+[![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/denis-peshkov/Cross.ErrorHandlers/latest?label=new+commits)](https://github.com/denis-peshkov/Cross.ErrorHandlers/commits/master)
+![Activity](https://img.shields.io/github/commit-activity/w/denis-peshkov/Cross.ErrorHandlers)
+![Activity](https://img.shields.io/github/commit-activity/m/denis-peshkov/Cross.ErrorHandlers)
+![Activity](https://img.shields.io/github/commit-activity/y/denis-peshkov/Cross.ErrorHandlers)
+
+# Cross.ErrorHandlers
 
 A .NET library providing unified error handling for ASP.NET Core applications. The package implements middleware that catches exceptions and transforms them into standardized JSON responses with proper HTTP status codes.
 
@@ -19,7 +34,7 @@ Designed to streamline error handling across microservices and web applications 
 
 ## Install NuGet package
 
-Install the package _Cross.ErrorHandlers_ [NuGet package](https://www.nuget.org/packages/Cross.ErrorHandlers/) into your ASP.NET Core project:
+Install the _Cross.ErrorHandlers_ [NuGet package](https://www.nuget.org/packages/Cross.ErrorHandlers/) into your ASP.NET Core project:
 
 ```powershell
 Install-Package Cross.ErrorHandlers

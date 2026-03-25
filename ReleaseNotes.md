@@ -1,6 +1,4 @@
-# Release Notes
-
-Release Notes - Cross.ErrorHandlers
+# Release Notes - Cross.ErrorHandlers
 https://github.com/denis-peshkov/Cross.ErrorHandlers/releases
 
 ## 7.0.0 - 3 May 2024
@@ -74,3 +72,7 @@ https://github.com/denis-peshkov/Cross.ErrorHandlers/releases
 
 ### CI
 - GitHub Actions: `setup-dotnet` installs SDK bands `6.0.x`–`10.0.x` to match target frameworks.
+
+## 7.5.0 - 21 Mar 2026
+- Fix pipeline
+- Fix packages version in nuspec

@@ -1,6 +1,4 @@
-# Release Notes
-
-Release Notes - Cross.ErrorHandlers
+# Release Notes - Cross.ErrorHandlers
 https://github.com/denis-peshkov/Cross.ErrorHandlers/releases
 
 ## 7.0.0 - 3 May 2024

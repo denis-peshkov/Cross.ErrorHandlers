@@ -12,16 +12,6 @@
     <repository type="git" url="https://github.com/denis-peshkov/Cross.ErrorHandlers" />
     <readme>docs\README.md</readme>
     <icon>icon.png</icon>
-    <releaseNotes><![CDATA[
-- Optional IInternalServerLogger in DI: middleware calls LogInternalServerError on your implementation when registered; otherwise falls back to ILogger<ErrorHandlerMiddleware>.
-- Library targets net6.0, net7.0, net8.0, net9.0, net10.0 (previously net7.0 / net8.0 only).
-- Replaced Microsoft.AspNetCore.Mvc.Core with Microsoft.AspNetCore.Http.Abstractions and explicit Microsoft.Extensions.* packages; FluentValidation updated to 11.12.0.
-- Added Microsoft.SourceLink.GitHub for debugging (symbols).
-- Packaged assemblies for net6.0, net9.0, net10.0; nuspec dependencies and copyright aligned with the project.
-- README updated: ApiEnvelope / ErrorModel, features, configuration (ClearStackTraceErrors), correlation ID, exception table, custom logging.
-- Extended middleware unit tests (correlation ID, ClearStackTraceErrors, IInternalServerLogger, HttpClientException paths, ConflictException); added ModelsTests for ApiEnvelope and ErrorModel.
-- GitHub Actions: setup-dotnet installs SDK bands 6.0.x–10.0.x to match target frameworks.
-]]></releaseNotes>
     <description>
       A .NET library providing unified error handling for ASP.NET Core applications. The package implements middleware that catches exceptions and transforms them into standardized JSON responses with proper HTTP status codes.
 
@@ -36,15 +26,67 @@
       Designed to streamline error handling across microservices and web applications while maintaining proper error tracking and debugging capabilities.
     </description>
     <tags>dotnet aspnetcore middleware error-handling exception-handling error-middleware csharp json microservices logging correlation-id nuget-package error-tracking debugging web-api</tags>
+    <releaseNotes><![CDATA[
+- Optional IInternalServerLogger in DI: middleware calls LogInternalServerError on your implementation when registered; otherwise falls back to ILogger<ErrorHandlerMiddleware>.
+- Library targets net6.0, net7.0, net8.0, net9.0, net10.0 (previously net7.0 / net8.0 only).
+- Replaced Microsoft.AspNetCore.Mvc.Core with Microsoft.AspNetCore.Http.Abstractions and explicit Microsoft.Extensions.* packages; FluentValidation updated to 11.12.0.
+- Added Microsoft.SourceLink.GitHub for debugging (symbols).
+- Packaged assemblies for net6.0, net9.0, net10.0; nuspec dependencies and copyright aligned with the project.
+- README updated: ApiEnvelope / ErrorModel, features, configuration (ClearStackTraceErrors), correlation ID, exception table, custom logging.
+- Extended middleware unit tests (correlation ID, ClearStackTraceErrors, IInternalServerLogger, HttpClientException paths, ConflictException); added ModelsTests for ApiEnvelope and ErrorModel.
+- GitHub Actions: setup-dotnet installs SDK bands 6.0.x–10.0.x to match target frameworks.
+]]></releaseNotes>
     <dependencies>
-      <dependency id="FluentValidation" version="11.8.0" />
-      <dependency id="MediatR.Contracts" version="2.0.1" />
-      <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="2.3.9" />
-      <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="8.0.0" />
-      <dependency id="Microsoft.Extensions.Configuration.Binder" version="8.0.2" />
-      <dependency id="Microsoft.Extensions.DependencyInjection" version="8.0.1" />
-      <dependency id="Microsoft.Extensions.Hosting.Abstractions" version="8.0.1" />
-      <dependency id="Microsoft.Extensions.Logging.Abstractions" version="8.0.3" />
+      <group targetFramework="net6.0">
+        <dependency id="FluentValidation" version="11.12.0" />
+        <dependency id="MediatR.Contracts" version="2.0.1" />
+        <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="2.3.9" />
+        <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="8.0.0" />
+        <dependency id="Microsoft.Extensions.Configuration.Binder" version="8.0.2" />
+        <dependency id="Microsoft.Extensions.DependencyInjection" version="8.0.1" />
+        <dependency id="Microsoft.Extensions.Hosting.Abstractions" version="8.0.1" />
+        <dependency id="Microsoft.Extensions.Logging.Abstractions" version="8.0.3" />
+      </group>
+      <group targetFramework="net7.0">
+        <dependency id="FluentValidation" version="11.12.0" />
+        <dependency id="MediatR.Contracts" version="2.0.1" />
+        <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="2.3.9" />
+        <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="8.0.0" />
+        <dependency id="Microsoft.Extensions.Configuration.Binder" version="8.0.2" />
+        <dependency id="Microsoft.Extensions.DependencyInjection" version="8.0.1" />
+        <dependency id="Microsoft.Extensions.Hosting.Abstractions" version="8.0.1" />
+        <dependency id="Microsoft.Extensions.Logging.Abstractions" version="8.0.3" />
+      </group>
+      <group targetFramework="net8.0">
+        <dependency id="FluentValidation" version="11.12.0" />
+        <dependency id="MediatR.Contracts" version="2.0.1" />
+        <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="2.3.9" />
+        <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="8.0.0" />
+        <dependency id="Microsoft.Extensions.Configuration.Binder" version="8.0.2" />
+        <dependency id="Microsoft.Extensions.DependencyInjection" version="8.0.1" />
+        <dependency id="Microsoft.Extensions.Hosting.Abstractions" version="8.0.1" />
+        <dependency id="Microsoft.Extensions.Logging.Abstractions" version="8.0.3" />
+      </group>
+      <group targetFramework="net9.0">
+        <dependency id="FluentValidation" version="11.12.0" />
+        <dependency id="MediatR.Contracts" version="2.0.1" />
+        <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="2.3.9" />
+        <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="9.0.14" />
+        <dependency id="Microsoft.Extensions.Configuration.Binder" version="9.0.14" />
+        <dependency id="Microsoft.Extensions.DependencyInjection" version="9.0.14" />
+        <dependency id="Microsoft.Extensions.Hosting.Abstractions" version="9.0.14" />
+        <dependency id="Microsoft.Extensions.Logging.Abstractions" version="9.0.14" />
+      </group>
+      <group targetFramework="net10.0">
+        <dependency id="FluentValidation" version="11.12.0" />
+        <dependency id="MediatR.Contracts" version="2.0.1" />
+        <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="2.3.9" />
+        <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="10.0.5" />
+        <dependency id="Microsoft.Extensions.Configuration.Binder" version="10.0.5" />
+        <dependency id="Microsoft.Extensions.DependencyInjection" version="10.0.5" />
+        <dependency id="Microsoft.Extensions.Hosting.Abstractions" version="10.0.5" />
+        <dependency id="Microsoft.Extensions.Logging.Abstractions" version="10.0.5" />
+      </group>
     </dependencies>
   </metadata>
   <files>

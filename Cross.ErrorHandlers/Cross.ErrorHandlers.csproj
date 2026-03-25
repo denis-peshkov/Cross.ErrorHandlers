@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;net10.0</TargetFrameworks>
@@ -16,15 +16,41 @@
     <Delete Files=".\obj\**\*.cs" />
   </Target>
 
+  <!--
+    Microsoft.Extensions.*: net9/10 use one aligned patch line. net6–8 share the 8.0.x set (matches Serilog.Sinks.ApplicationInsights.AspNetCore)
+    so the dependency graph stays consistent across target frameworks.
+  -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net7.0' Or '$(TargetFramework)' == 'net8.0'">
+    <MicrosoftExtConfigurationAbstractionsVersion>8.0.0</MicrosoftExtConfigurationAbstractionsVersion>
+    <MicrosoftExtConfigurationBinderVersion>8.0.2</MicrosoftExtConfigurationBinderVersion>
+    <MicrosoftExtDependencyInjectionVersion>8.0.1</MicrosoftExtDependencyInjectionVersion>
+    <MicrosoftExtHostingAbstractionsVersion>8.0.1</MicrosoftExtHostingAbstractionsVersion>
+    <MicrosoftExtLoggingAbstractionsVersion>8.0.3</MicrosoftExtLoggingAbstractionsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <MicrosoftExtConfigurationAbstractionsVersion>9.0.14</MicrosoftExtConfigurationAbstractionsVersion>
+    <MicrosoftExtConfigurationBinderVersion>9.0.14</MicrosoftExtConfigurationBinderVersion>
+    <MicrosoftExtDependencyInjectionVersion>9.0.14</MicrosoftExtDependencyInjectionVersion>
+    <MicrosoftExtHostingAbstractionsVersion>9.0.14</MicrosoftExtHostingAbstractionsVersion>
+    <MicrosoftExtLoggingAbstractionsVersion>9.0.14</MicrosoftExtLoggingAbstractionsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <MicrosoftExtConfigurationAbstractionsVersion>10.0.5</MicrosoftExtConfigurationAbstractionsVersion>
+    <MicrosoftExtConfigurationBinderVersion>10.0.5</MicrosoftExtConfigurationBinderVersion>
+    <MicrosoftExtDependencyInjectionVersion>10.0.5</MicrosoftExtDependencyInjectionVersion>
+    <MicrosoftExtHostingAbstractionsVersion>10.0.5</MicrosoftExtHostingAbstractionsVersion>
+    <MicrosoftExtLoggingAbstractionsVersion>10.0.5</MicrosoftExtLoggingAbstractionsVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.12.0" />
     <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.9" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(MicrosoftExtConfigurationAbstractionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(MicrosoftExtConfigurationBinderVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftExtDependencyInjectionVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(MicrosoftExtHostingAbstractionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftExtLoggingAbstractionsVersion)" />
 
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>

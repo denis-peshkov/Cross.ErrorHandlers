@@ -16,13 +16,33 @@
     <Delete Files=".\obj\**\*.cs" />
   </Target>
 
+  <!-- Aligned with Cross.ErrorHandlers Microsoft.Extensions.* per TFM (avoids NU1605 on net9/net10). -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net7.0' Or '$(TargetFramework)' == 'net8.0'">
+    <MicrosoftExtConfigurationVersion>8.0.0</MicrosoftExtConfigurationVersion>
+    <MicrosoftExtConfigurationEnvironmentVariablesVersion>8.0.0</MicrosoftExtConfigurationEnvironmentVariablesVersion>
+    <MicrosoftExtConfigurationFileExtensionsVersion>8.0.1</MicrosoftExtConfigurationFileExtensionsVersion>
+    <MicrosoftExtConfigurationJsonVersion>8.0.1</MicrosoftExtConfigurationJsonVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <MicrosoftExtConfigurationVersion>9.0.14</MicrosoftExtConfigurationVersion>
+    <MicrosoftExtConfigurationEnvironmentVariablesVersion>9.0.14</MicrosoftExtConfigurationEnvironmentVariablesVersion>
+    <MicrosoftExtConfigurationFileExtensionsVersion>9.0.14</MicrosoftExtConfigurationFileExtensionsVersion>
+    <MicrosoftExtConfigurationJsonVersion>9.0.14</MicrosoftExtConfigurationJsonVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <MicrosoftExtConfigurationVersion>10.0.5</MicrosoftExtConfigurationVersion>
+    <MicrosoftExtConfigurationEnvironmentVariablesVersion>10.0.5</MicrosoftExtConfigurationEnvironmentVariablesVersion>
+    <MicrosoftExtConfigurationFileExtensionsVersion>10.0.5</MicrosoftExtConfigurationFileExtensionsVersion>
+    <MicrosoftExtConfigurationJsonVersion>10.0.5</MicrosoftExtConfigurationJsonVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.9" />
     <PackageReference Include="FluentValidation" Version="11.12.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtConfigurationVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(MicrosoftExtConfigurationEnvironmentVariablesVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="$(MicrosoftExtConfigurationFileExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtConfigurationJsonVersion)" />
 
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="NUnit" Version="3.14.0" />

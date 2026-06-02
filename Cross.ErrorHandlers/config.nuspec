@@ -27,14 +27,11 @@
     </description>
     <tags>dotnet aspnetcore middleware error-handling exception-handling error-middleware csharp json microservices logging correlation-id nuget-package error-tracking debugging web-api</tags>
     <releaseNotes><![CDATA[
-- Optional IInternalServerLogger in DI: middleware calls LogInternalServerError on your implementation when registered; otherwise falls back to ILogger<ErrorHandlerMiddleware>.
-- Library targets net6.0, net7.0, net8.0, net9.0, net10.0 (previously net7.0 / net8.0 only).
-- Replaced Microsoft.AspNetCore.Mvc.Core with Microsoft.AspNetCore.Http.Abstractions and explicit Microsoft.Extensions.* packages; FluentValidation updated to 11.12.0.
-- Added Microsoft.SourceLink.GitHub for debugging (symbols).
-- Packaged assemblies for net6.0, net9.0, net10.0; nuspec dependencies and copyright aligned with the project.
-- README updated: ApiEnvelope / ErrorModel, features, configuration (ClearStackTraceErrors), correlation ID, exception table, custom logging.
-- Extended middleware unit tests (correlation ID, ClearStackTraceErrors, IInternalServerLogger, HttpClientException paths, ConflictException); added ModelsTests for ApiEnvelope and ErrorModel.
-- GitHub Actions: setup-dotnet installs SDK bands 6.0.x–10.0.x to match target frameworks.
+- Correlation ID is now returned only in the `X-Correlation-Id` response header (removed from response body).
+- `X-Correlation-Id` is returned for both successful and error responses.
+- Test project renamed from `Cross.ErrorHandlers.UnitTests` to `Cross.ErrorHandlers.Tests`.
+- Added `Category(TestCategory.UNIT)` markers to test fixtures.
+- Updated solution file type.
 ]]></releaseNotes>
     <dependencies>
       <group targetFramework="net6.0">

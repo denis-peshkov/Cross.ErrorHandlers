@@ -6,11 +6,6 @@
 public class ErrorModel
 {
     /// <summary>
-    /// Gets or sets the correlation ID for request tracking.
-    /// </summary>
-    public Guid CorrelationId { get; set; }
-
-    /// <summary>
     /// Gets or sets the error code identifying the type of error.
     /// </summary>
     public string Code { get; set; }

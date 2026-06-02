@@ -74,11 +74,12 @@ public class Program
 
 Errors are serialized as camelCase JSON. The body is an `ApiEnvelope` object: the failure details live under `error` (`ErrorModel`).
 
+The response also includes the correlation id in the `X-Correlation-Id` header.
+
 ```json
 {
   "data": null,
   "error": {
-    "correlationId": "00000000-0000-0000-0000-000000000000",
     "code": "errorCode",
     "subCode": null,
     "message": "Error description",
@@ -88,6 +89,12 @@ Errors are serialized as camelCase JSON. The body is an `ApiEnvelope` object: th
     }
   }
 }
+```
+
+Response headers:
+
+```text
+X-Correlation-Id: 00000000-0000-0000-0000-000000000000
 ```
 
 `subCode` is set when a `ConflictException` carries a sub-code (via `Data["SubCode"]`).
@@ -129,7 +136,7 @@ Set to `false` to keep the populated `errors` dictionary (e.g. exception details
 
 1. If the request includes a valid GUID in the `X-Correlation-Id` header, that value is used.
 2. Otherwise a new GUID is generated.
-3. The value is set on the returned `error.correlationId`.
+3. The value is set on the response header `X-Correlation-Id` for every request (success and error cases).
 
 ## Custom exception logging
 
@@ -160,12 +167,17 @@ Example response when the item is not found (shape and status as produced by the
     "code": "NotFound",
     "subCode": null,
     "message": "Item with id 123 not found",
-    "correlationId": "7b2ab0e6-3c42-4488-a8b5-9b6d15b63e1a",
     "errors": {
       "Exception": ["NotFoundException: Item with id 123 not found"]
     }
   }
 }
+```
+
+Response headers:
+
+```text
+X-Correlation-Id: 7b2ab0e6-3c42-4488-a8b5-9b6d15b63e1a
 ```
 
 HTTP status for this case is **400** unless you change the middleware.

@@ -9,6 +9,8 @@
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
     <NoWarn>1701;1702;1591;CS8618;NU1701;</NoWarn>
+    <AssemblyName>Cross.ErrorHandlers.Tests</AssemblyName>
+    <RootNamespace>Cross.ErrorHandlers.Tests</RootNamespace>
   </PropertyGroup>
 
   <Target Name="DeleteBinObjFolders" BeforeTargets="Clean">

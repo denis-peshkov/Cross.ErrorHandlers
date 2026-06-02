@@ -11,6 +11,7 @@
 public class ErrorHandlerMiddleware
 {
     private const string EXCEPTION_TITLE = "Exception";
+    private const string CORRELATION_ID_ITEM_KEY = "__Cross.ErrorHandlers.CorrelationId";
 
     private readonly RequestDelegate _next;
     private readonly IHostEnvironment _env;
@@ -45,6 +46,10 @@ public class ErrorHandlerMiddleware
     /// <returns>A task that represents the completion of request processing.</returns>
     public async Task InvokeAsync(HttpContext httpContext)
     {
+        var correlationId = GetCorrelationId(httpContext);
+        httpContext.Items[CORRELATION_ID_ITEM_KEY] = correlationId;
+        httpContext.Response.Headers["X-Correlation-Id"] = correlationId.ToString();
+
         try
         {
             await _next(httpContext);
@@ -61,7 +66,7 @@ public class ErrorHandlerMiddleware
                 httpContext,
                 new ErrorModel
                 (
-                    code: ErrorCodeEnum.InvalidParameters.ToString(),
+                    code: nameof(ErrorCodeEnum.InvalidParameters),
                     message: "Validation error from the custom middleware",
                     errors: errors
                 ),
@@ -75,7 +80,7 @@ public class ErrorHandlerMiddleware
                 httpContext,
                 new ErrorModel
                 (
-                    code: ErrorCodeEnum.InvalidParameters.ToString(),
+                    code: nameof(ErrorCodeEnum.InvalidParameters),
                     message: "Validation error from the custom middleware",
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.Message } } }
                 ),
@@ -89,7 +94,7 @@ public class ErrorHandlerMiddleware
                 httpContext,
                 new ErrorModel
                 (
-                    code: ErrorCodeEnum.InvalidOperation.ToString(),
+                    code: nameof(ErrorCodeEnum.InvalidOperation),
                     message: ex.Message,
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ));
@@ -102,7 +107,7 @@ public class ErrorHandlerMiddleware
                 httpContext,
                 new ErrorModel
                 (
-                    code: ErrorCodeEnum.NotFound.ToString(),
+                    code: nameof(ErrorCodeEnum.NotFound),
                     message: ex.Message,
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ));
@@ -115,7 +120,7 @@ public class ErrorHandlerMiddleware
                 httpContext,
                 new ErrorModel
                 (
-                    code: ErrorCodeEnum.Conflict.ToString(),
+                    code: nameof(ErrorCodeEnum.Conflict),
                     subCode: ex.Data["SubCode"]?.ToString(),
                     message: ex.Message,
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
@@ -129,7 +134,7 @@ public class ErrorHandlerMiddleware
                 httpContext,
                 new ErrorModel
                 (
-                    code: ErrorCodeEnum.BadRequest.ToString(),
+                    code: nameof(ErrorCodeEnum.BadRequest),
                     message: ex.Message,
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ));
@@ -142,7 +147,7 @@ public class ErrorHandlerMiddleware
                 httpContext,
                 new ErrorModel
                 (
-                    code: ErrorCodeEnum.NotAuthorized.ToString(),
+                    code: nameof(ErrorCodeEnum.NotAuthorized),
                     message: ex.Message,
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ),
@@ -156,7 +161,7 @@ public class ErrorHandlerMiddleware
                 httpContext,
                 new ErrorModel
                 (
-                    code: ErrorCodeEnum.Forbidden.ToString(),
+                    code: nameof(ErrorCodeEnum.Forbidden),
                     message: ex.Message,
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ),
@@ -170,7 +175,7 @@ public class ErrorHandlerMiddleware
                 httpContext,
                 new ErrorModel
                 (
-                    code: ErrorCodeEnum.UnauthorizedClient.ToString(),
+                    code: nameof(ErrorCodeEnum.UnauthorizedClient),
                     message: ex.Message,
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ),
@@ -190,7 +195,7 @@ public class ErrorHandlerMiddleware
                 httpContext,
                 new ErrorModel
                 (
-                    code: ErrorCodeEnum.InvalidClient.ToString(),
+                    code: nameof(ErrorCodeEnum.InvalidClient),
                     message: message,
                     errors: null
                 ));
@@ -203,7 +208,7 @@ public class ErrorHandlerMiddleware
                 httpContext,
                 new ErrorModel
                 (
-                    code: ErrorCodeEnum.ImageNotFound.ToString(),
+                    code: nameof(ErrorCodeEnum.ImageNotFound),
                     message: ex.Message,
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ));
@@ -216,7 +221,7 @@ public class ErrorHandlerMiddleware
                 httpContext,
                 new ErrorModel
                 (
-                    code: ErrorCodeEnum.InternalServerError.ToString(),
+                    code: nameof(ErrorCodeEnum.InternalServerError),
                     message: "Internal Server Error from the custom middleware",
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ),
@@ -228,8 +233,6 @@ public class ErrorHandlerMiddleware
     {
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)statusCode;
-
-        errorModel.CorrelationId = GetCorrelationId(context);
 
         var clearStackTraceErrors = _configuration.GetValue<bool>("ClearStackTraceErrors");
 
@@ -250,7 +253,10 @@ public class ErrorHandlerMiddleware
             return;
         }
 
-        _logger.LogError(ex, "{CorrelationId} {ExceptionType}: {Message}", GetCorrelationId(context), ex.GetType(), ex.Message);
+        var correlationId = context.Items.TryGetValue(CORRELATION_ID_ITEM_KEY, out var value) && value is Guid guid
+            ? guid
+            : GetCorrelationId(context);
+        _logger.LogError(ex, "{CorrelationId} {ExceptionType}: {Message}", correlationId, ex.GetType(), ex.Message);
     }
 
     private static Guid GetCorrelationId(HttpContext context)

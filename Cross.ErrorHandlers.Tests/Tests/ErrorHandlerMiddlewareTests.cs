@@ -1,6 +1,7 @@
-﻿namespace Cross.ErrorHandlers.UnitTests.Tests;
+﻿namespace Cross.ErrorHandlers.Tests.Tests;
 
 [TestFixture]
+[Category(TestCategory.UNIT)]
 public class ErrorHandlerMiddlewareTests : TestsBase
 {
     private Mock<IHostEnvironment> _mockEnv = null!;
@@ -168,6 +169,8 @@ public class ErrorHandlerMiddlewareTests : TestsBase
     {
         // Arrange
         var nextCalled = false;
+        var correlationHeader = _context.Request.Headers["X-Correlation-Id"].ToString();
+        Guid.TryParse(correlationHeader, out var expectedCorrelationId).Should().BeTrue();
         _middleware = new ErrorHandlerMiddleware(
             next: (ctx) => { nextCalled = true; return Task.CompletedTask; },
             _mockEnv.Object,
@@ -181,6 +184,7 @@ public class ErrorHandlerMiddlewareTests : TestsBase
         // Assert
         nextCalled.Should().BeTrue();
         _context.Response.StatusCode.Should().Be((int)HttpStatusCode.OK);
+        _context.Response.Headers["X-Correlation-Id"].ToString().Should().Be(expectedCorrelationId.ToString());
     }
 
     [Test]
@@ -202,15 +206,7 @@ public class ErrorHandlerMiddlewareTests : TestsBase
         await _middleware.InvokeAsync(_context);
 
         // Assert
-        _context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var response = await JsonSerializer.DeserializeAsync<ApiEnvelope<object>>(
-            _context.Response.Body,
-            ErrorHandlerMiddleware.JsonCamelCaseSerializerOptions
-        );
-
-        var errorModel = response!.Error;
-        errorModel.Should().NotBeNull();
-        errorModel!.CorrelationId.Should().Be(correlationId);
+        _context.Response.Headers["X-Correlation-Id"].ToString().Should().Be(correlationId.ToString());
     }
 
     [Test]
@@ -494,13 +490,9 @@ public class ErrorHandlerMiddlewareTests : TestsBase
 
         await _middleware.InvokeAsync(_context);
 
-        _context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var response = await JsonSerializer.DeserializeAsync<ApiEnvelope<object>>(
-            _context.Response.Body,
-            ErrorHandlerMiddleware.JsonCamelCaseSerializerOptions
-        );
-
-        response!.Error!.CorrelationId.Should().NotBe(Guid.Empty);
+        var correlationHeader = _context.Response.Headers["X-Correlation-Id"].ToString();
+        Guid.TryParse(correlationHeader, out var correlationId).Should().BeTrue();
+        correlationId.Should().NotBe(Guid.Empty);
     }
 
     [Test]
@@ -517,13 +509,36 @@ public class ErrorHandlerMiddlewareTests : TestsBase
 
         await _middleware.InvokeAsync(_context);
 
-        _context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var response = await JsonSerializer.DeserializeAsync<ApiEnvelope<object>>(
-            _context.Response.Body,
-            ErrorHandlerMiddleware.JsonCamelCaseSerializerOptions
+        var correlationHeader = _context.Response.Headers["X-Correlation-Id"].ToString();
+        Guid.TryParse(correlationHeader, out var correlationId).Should().BeTrue();
+        correlationId.Should().NotBe(Guid.Empty);
+    }
+
+    [Test]
+    public async Task InvokeAsync_WhenCorrelationIdHeaderInvalid_LogsSameCorrelationIdAsResponseHeader()
+    {
+        _context.Request.Headers["X-Correlation-Id"] = "not-a-valid-guid";
+        var exception = new Exception("test");
+        _middleware = new ErrorHandlerMiddleware(
+            next: _ => throw exception,
+            _mockEnv.Object,
+            _mockLogger.Object,
+            Configuration
         );
 
-        response!.Error!.CorrelationId.Should().NotBe(Guid.Empty);
+        await _middleware.InvokeAsync(_context);
+
+        var correlationHeader = _context.Response.Headers["X-Correlation-Id"].ToString();
+        correlationHeader.Should().NotBeNullOrWhiteSpace();
+
+        _mockLogger.Verify(
+            x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains(correlationHeader, StringComparison.Ordinal)),
+                exception,
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Once);
     }
 
     [Test]

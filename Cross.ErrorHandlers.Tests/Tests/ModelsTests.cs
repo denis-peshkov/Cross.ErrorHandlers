@@ -1,6 +1,7 @@
-﻿namespace Cross.ErrorHandlers.UnitTests.Tests;
+﻿namespace Cross.ErrorHandlers.Tests.Tests;
 
 [TestFixture]
+[Category(TestCategory.UNIT)]
 public class ModelsTests
 {
     [Test]

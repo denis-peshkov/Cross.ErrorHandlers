@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/.github/" />
+  <Folder Name="/.github/workflows/">
+    <File Path=".github/workflows/dotnet.yml" />
+  </Folder>
+  <Folder Name="/assets/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="GitVersion.yml" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+    <File Path="ReleaseNotes.md" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="JsonEncoding/JsonEncoding.csproj" />
+  </Folder>
+  <Project Path="Cross.ErrorHandlers.Tests/Cross.ErrorHandlers.Tests.csproj" />
+  <Project Path="Cross.ErrorHandlers/Cross.ErrorHandlers.csproj" />
+</Solution>

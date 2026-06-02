@@ -24,7 +24,7 @@ global using Cross.ErrorHandlers.Enums;
 global using Cross.ErrorHandlers.Exceptions;
 global using Cross.ErrorHandlers.Middleware;
 global using Cross.ErrorHandlers.Models;
-global using Cross.ErrorHandlers.UnitTests.Common;
+global using Cross.ErrorHandlers.Tests.Common;
 global using FluentAssertions;
 global using Cross.ErrorHandlers.Logging;
 global using FluentValidation;

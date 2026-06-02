@@ -92,7 +92,7 @@ jobs:
             -Dsonar.projectKey=Cross.ErrorHandlers
             -Dsonar.cs.opencover.reportsPaths=TestResults/**/coverage.opencover.xml
             -Dsonar.sources=Cross.ErrorHandlers/
-            -Dsonar.tests=Cross.ErrorHandlers.UnitTests/
+            -Dsonar.tests=Cross.ErrorHandlers.Tests/
             -Dsonar.verbose=true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

@@ -76,3 +76,6 @@ https://github.com/denis-peshkov/Cross.ErrorHandlers/releases
 ## 7.5.0 - 21 Mar 2026
 - Fix pipeline
 - Fix packages version in nuspec
+
+## 7.6.0 - 2 Jun 2026
+- Add correlation ID to middleware response headers and refactor error handling logic

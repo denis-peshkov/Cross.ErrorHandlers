@@ -1,4 +1,4 @@
-﻿namespace Cross.ErrorHandlers.UnitTests.Common;
+﻿namespace Cross.ErrorHandlers.Tests.Common;
 
 [TestFixture]
 public abstract class TestsBase

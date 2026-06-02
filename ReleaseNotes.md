@@ -78,4 +78,8 @@ https://github.com/denis-peshkov/Cross.ErrorHandlers/releases
 - Fix packages version in nuspec
 
 ## 7.6.0 - 2 Jun 2026
-- Add correlation ID to middleware response headers and refactor error handling logic
+- Correlation ID is now returned only in the `X-Correlation-Id` response header (removed from response body).
+- `X-Correlation-Id` is returned for both successful and error responses.
+- Test project renamed from `Cross.ErrorHandlers.UnitTests` to `Cross.ErrorHandlers.Tests`.
+- Added `Category(TestCategory.UNIT)` markers to test fixtures.
+- Updated solution file type.

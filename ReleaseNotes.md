@@ -83,3 +83,6 @@ https://github.com/denis-peshkov/Cross.ErrorHandlers/releases
 - Test project renamed from `Cross.ErrorHandlers.UnitTests` to `Cross.ErrorHandlers.Tests`.
 - Added `Category(TestCategory.UNIT)` markers to test fixtures.
 - Updated solution file type.
+
+## 7.7.0 - 19 Nov 2026
+- Added target framework `net11.0` (Microsoft.Extensions.* `11.0.0`).

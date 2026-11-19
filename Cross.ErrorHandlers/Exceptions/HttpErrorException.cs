@@ -16,7 +16,7 @@ public sealed class HttpErrorException : Exception
     /// Initializes a new instance of the <see cref="HttpErrorException"/> class with a specified error message.
     /// </summary>
     /// <param name="message">The message that describes the error.</param>
-    public HttpErrorException(string? message) : this(message, null, null)
+    public HttpErrorException(string message) : base(message)
     {
     }
 
@@ -24,8 +24,8 @@ public sealed class HttpErrorException : Exception
     /// Initializes a new instance of the <see cref="HttpErrorException"/> class with a specified error message and sub-code.
     /// </summary>
     /// <param name="message">The message that describes the error.</param>
-    /// <param name="subCode">A specific sub-code that provides additional error context. When not null, it is stored in <see cref="Exception.Data"/> under the key <c>SubCode</c>.</param>
-    public HttpErrorException(string? message, string? subCode) : this(message, subCode, null)
+    /// <param name="subCode">A specific sub-code that provides additional error context. Stored in <see cref="Exception.Data"/> under the key <c>SubCode</c>.</param>
+    public HttpErrorException(string message, string subCode) : this(message, subCode, null)
     {
     }
 
@@ -34,7 +34,7 @@ public sealed class HttpErrorException : Exception
     /// </summary>
     /// <param name="message">The message that describes the error.</param>
     /// <param name="innerException">The exception that is the cause of the current exception.</param>
-    public HttpErrorException(string? message, Exception? innerException) : base(message, innerException)
+    public HttpErrorException(string message, Exception innerException) : base(message, innerException)
     {
     }
 
@@ -42,13 +42,10 @@ public sealed class HttpErrorException : Exception
     /// Initializes a new instance of the <see cref="HttpErrorException"/> class with a specified error message, sub-code, and a reference to the inner exception that is the cause of this exception.
     /// </summary>
     /// <param name="message">The message that describes the error.</param>
-    /// <param name="subCode">A specific sub-code that provides additional error context. When not null, it is stored in <see cref="Exception.Data"/> under the key <c>SubCode</c>.</param>
+    /// <param name="subCode">A specific sub-code that provides additional error context. Stored in <see cref="Exception.Data"/> under the key <c>SubCode</c>.</param>
     /// <param name="innerException">The exception that is the cause of the current exception.</param>
-    public HttpErrorException(string? message, string? subCode, Exception? innerException) : base(message, innerException)
+    public HttpErrorException(string message, string subCode, Exception? innerException) : base(message, innerException)
     {
-        if (subCode != null)
-        {
-            Data.Add("SubCode", subCode);
-        }
+        Data.Add("SubCode", subCode);
     }
 }

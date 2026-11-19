@@ -13,11 +13,11 @@
 ![Activity](https://img.shields.io/github/commit-activity/m/denis-peshkov/Cross.ErrorHandlers)
 ![Activity](https://img.shields.io/github/commit-activity/y/denis-peshkov/Cross.ErrorHandlers)
 
+![TFM](https://img.shields.io/badge/TFM-net6.0%20%7C%20net7.0%20%7C%20net8.0%20%7C%20net9.0%20%7C%20net10.0-512BD4)
+
 # Cross.ErrorHandlers
 
 A .NET library providing unified error handling for ASP.NET Core applications. The package implements middleware that catches exceptions and transforms them into standardized JSON responses with proper HTTP status codes.
-
-**Target frameworks:** `net6.0`, `net7.0`, `net8.0`, `net9.0`, `net10.0`
 
 ## Key Features
 

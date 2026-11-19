@@ -42,4 +42,5 @@ public enum ErrorCodeEnum
     BadRequest = 34,
     Conflict = 35,
     ImageNotFound = 36,
+    FailedDependency = 37,
 }

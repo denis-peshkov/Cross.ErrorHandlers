@@ -277,7 +277,7 @@ public class ErrorHandlerMiddlewareTests : TestsBase
     }
 
     [Test]
-    public async Task InvokeAsync_WhenConflictException_ReturnsBadRequest()
+    public async Task InvokeAsync_WhenConflictException_ReturnsConflict()
     {
         // Arrange
         var message = "Resource conflict";
@@ -295,7 +295,7 @@ public class ErrorHandlerMiddlewareTests : TestsBase
         await _middleware.InvokeAsync(_context);
 
         // Assert
-        _context.Response.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+        _context.Response.StatusCode.Should().Be((int)HttpStatusCode.Conflict);
 
         _context.Response.Body.Seek(0, SeekOrigin.Begin);
         var response = await JsonSerializer.DeserializeAsync<ApiEnvelope<object>>(
@@ -308,6 +308,83 @@ public class ErrorHandlerMiddlewareTests : TestsBase
         errorModel!.Code.Should().Be(ErrorCodeEnum.Conflict.ToString());
         errorModel.Message.Should().Be(message);
         errorModel.SubCode.Should().Be(subCode);
+    }
+
+    [Test]
+    public async Task InvokeAsync_WhenBadRequestException_WithSubCode_ReturnsSubCode()
+    {
+        var message = "Bad request";
+        var subCode = "INVALID_FIELD";
+        var exception = new BadRequestException(message, subCode);
+
+        _middleware = new ErrorHandlerMiddleware(
+            next: _ => throw exception,
+            _mockEnv.Object,
+            _mockLogger.Object,
+            Configuration
+        );
+
+        await _middleware.InvokeAsync(_context);
+
+        _context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var response = await JsonSerializer.DeserializeAsync<ApiEnvelope<object>>(
+            _context.Response.Body,
+            ErrorHandlerMiddleware.JsonCamelCaseSerializerOptions
+        );
+
+        response!.Error!.Code.Should().Be(ErrorCodeEnum.BadRequest.ToString());
+        response.Error!.SubCode.Should().Be(subCode);
+        response.Error!.Message.Should().Be(message);
+    }
+
+    [Test]
+    public async Task InvokeAsync_WhenFailedDependency_WithSubCode_ReturnsSubCode()
+    {
+        var message = "Dependency failed";
+        var subCode = "UPSTREAM_TIMEOUT";
+        var exception = new FailedDependency(message, subCode);
+
+        _middleware = new ErrorHandlerMiddleware(
+            next: _ => throw exception,
+            _mockEnv.Object,
+            _mockLogger.Object,
+            Configuration
+        );
+
+        await _middleware.InvokeAsync(_context);
+
+        _context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var response = await JsonSerializer.DeserializeAsync<ApiEnvelope<object>>(
+            _context.Response.Body,
+            ErrorHandlerMiddleware.JsonCamelCaseSerializerOptions
+        );
+
+        response!.Error!.Code.Should().Be(ErrorCodeEnum.FailedDependency.ToString());
+        response.Error!.SubCode.Should().Be(subCode);
+    }
+
+    [Test]
+    public async Task InvokeAsync_WhenNotFoundException_WithSubCode_ReturnsSubCode()
+    {
+        var exception = new NotFoundException("not found", "ENTITY_MISSING");
+
+        _middleware = new ErrorHandlerMiddleware(
+            next: _ => throw exception,
+            _mockEnv.Object,
+            _mockLogger.Object,
+            Configuration
+        );
+
+        await _middleware.InvokeAsync(_context);
+
+        _context.Response.Body.Seek(0, SeekOrigin.Begin);
+        var response = await JsonSerializer.DeserializeAsync<ApiEnvelope<object>>(
+            _context.Response.Body,
+            ErrorHandlerMiddleware.JsonCamelCaseSerializerOptions
+        );
+
+        response!.Error!.SubCode.Should().Be("ENTITY_MISSING");
+        response.Error!.Code.Should().Be(ErrorCodeEnum.NotFound.ToString());
     }
 
     [Test]
@@ -375,11 +452,11 @@ public class ErrorHandlerMiddlewareTests : TestsBase
     }
 
     [Test]
-    public async Task InvokeAsync_WhenIdentityUserManagerException_ReturnsInternalServerError()
+    public async Task InvokeAsync_WhenIdentityException_ReturnsInternalServerError()
     {
         // Arrange
         var message = "Identity operation failed";
-        var exception = new IdentityUserManagerException(message);
+        var exception = new IdentityException(message);
 
         _middleware = new ErrorHandlerMiddleware(
             next: (ctx) => throw exception,

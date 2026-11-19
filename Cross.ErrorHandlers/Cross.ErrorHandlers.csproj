@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;net10.0;net11.0</TargetFrameworks>
     <LangVersion>11</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
@@ -17,7 +17,7 @@
   </Target>
 
   <!--
-    Microsoft.Extensions.*: net9/10 use one aligned patch line. net6–8 share the 8.0.x set (matches Serilog.Sinks.ApplicationInsights.AspNetCore)
+    Microsoft.Extensions.*: net9/10/11 use one aligned patch line per TFM. net6–8 share the 8.0.x set (matches Serilog.Sinks.ApplicationInsights.AspNetCore)
     so the dependency graph stays consistent across target frameworks.
   -->
   <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net7.0' Or '$(TargetFramework)' == 'net8.0'">
@@ -40,6 +40,13 @@
     <MicrosoftExtDependencyInjectionVersion>10.0.5</MicrosoftExtDependencyInjectionVersion>
     <MicrosoftExtHostingAbstractionsVersion>10.0.5</MicrosoftExtHostingAbstractionsVersion>
     <MicrosoftExtLoggingAbstractionsVersion>10.0.5</MicrosoftExtLoggingAbstractionsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net11.0'">
+    <MicrosoftExtConfigurationAbstractionsVersion>11.0.0</MicrosoftExtConfigurationAbstractionsVersion>
+    <MicrosoftExtConfigurationBinderVersion>11.0.0</MicrosoftExtConfigurationBinderVersion>
+    <MicrosoftExtDependencyInjectionVersion>11.0.0</MicrosoftExtDependencyInjectionVersion>
+    <MicrosoftExtHostingAbstractionsVersion>11.0.0</MicrosoftExtHostingAbstractionsVersion>
+    <MicrosoftExtLoggingAbstractionsVersion>11.0.0</MicrosoftExtLoggingAbstractionsVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -13,11 +13,11 @@
 ![Activity](https://img.shields.io/github/commit-activity/m/denis-peshkov/Cross.ErrorHandlers)
 ![Activity](https://img.shields.io/github/commit-activity/y/denis-peshkov/Cross.ErrorHandlers)
 
+![TFM](https://img.shields.io/badge/TFM-net6.0%20%7C%20net7.0%20%7C%20net8.0%20%7C%20net9.0%20%7C%20net10.0%20%7C%20net11.0-512BD4)
+
 # Cross.ErrorHandlers
 
 A .NET library providing unified error handling for ASP.NET Core applications. The package implements middleware that catches exceptions and transforms them into standardized JSON responses with proper HTTP status codes.
-
-**Target frameworks:** `net6.0`, `net7.0`, `net8.0`, `net9.0`, `net10.0`
 
 ## Key Features
 
@@ -97,7 +97,7 @@ Response headers:
 X-Correlation-Id: 00000000-0000-0000-0000-000000000000
 ```
 
-`subCode` is set when a `ConflictException` carries a sub-code (via `Data["SubCode"]`).
+`subCode` is set when a library exception carries a sub-code (constructors with `subCode`, stored in `Data["SubCode"]`).
 
 ## Supported Exception Types
 
@@ -107,11 +107,12 @@ X-Correlation-Id: 00000000-0000-0000-0000-000000000000
 | `JsonException`                | 406         | `InvalidParameters`          |
 | `InvalidOperationException`    | 400         | `InvalidOperation`           |
 | `NotFoundException`            | 400         | `NotFound`                   |
-| `ConflictException`            | 400         | `Conflict`                   |
+| `FailedDependency`             | 400         | `FailedDependency`           |
+| `ConflictException`            | 409         | `Conflict`                   |
 | `BadRequestException`          | 400         | `BadRequest`                 |
 | `NotAuthorizedException`       | 401         | `NotAuthorized`              |
 | `ForbiddenException`           | 403         | `Forbidden`                  |
-| `IdentityUserManagerException` | 500         | `UnauthorizedClient`         |
+| `IdentityException`            | 500         | `UnauthorizedClient`         |
 | `HttpClientException`          | 400         | `InvalidClient`              |
 | `ImageNotFoundException`       | 400         | `ImageNotFound`              |
 | `Exception` (default)          | 500         | `InternalServerError`        |

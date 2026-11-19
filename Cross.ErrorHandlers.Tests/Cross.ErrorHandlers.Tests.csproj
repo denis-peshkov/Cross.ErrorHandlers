@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;net10.0;net11.0</TargetFrameworks>
     <LangVersion>11</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
@@ -18,7 +18,7 @@
     <Delete Files=".\obj\**\*.cs" />
   </Target>
 
-  <!-- Aligned with Cross.ErrorHandlers Microsoft.Extensions.* per TFM (avoids NU1605 on net9/net10). -->
+  <!-- Aligned with Cross.ErrorHandlers Microsoft.Extensions.* per TFM (avoids NU1605 on net9/net10/net11). -->
   <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net7.0' Or '$(TargetFramework)' == 'net8.0'">
     <MicrosoftExtConfigurationVersion>8.0.0</MicrosoftExtConfigurationVersion>
     <MicrosoftExtConfigurationEnvironmentVariablesVersion>8.0.0</MicrosoftExtConfigurationEnvironmentVariablesVersion>
@@ -36,6 +36,12 @@
     <MicrosoftExtConfigurationEnvironmentVariablesVersion>10.0.5</MicrosoftExtConfigurationEnvironmentVariablesVersion>
     <MicrosoftExtConfigurationFileExtensionsVersion>10.0.5</MicrosoftExtConfigurationFileExtensionsVersion>
     <MicrosoftExtConfigurationJsonVersion>10.0.5</MicrosoftExtConfigurationJsonVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net11.0'">
+    <MicrosoftExtConfigurationVersion>11.0.0</MicrosoftExtConfigurationVersion>
+    <MicrosoftExtConfigurationEnvironmentVariablesVersion>11.0.0</MicrosoftExtConfigurationEnvironmentVariablesVersion>
+    <MicrosoftExtConfigurationFileExtensionsVersion>11.0.0</MicrosoftExtConfigurationFileExtensionsVersion>
+    <MicrosoftExtConfigurationJsonVersion>11.0.0</MicrosoftExtConfigurationJsonVersion>
   </PropertyGroup>
 
   <ItemGroup>

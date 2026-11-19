@@ -97,7 +97,7 @@ Response headers:
 X-Correlation-Id: 00000000-0000-0000-0000-000000000000
 ```
 
-`subCode` is set when a `ConflictException` carries a sub-code (via `Data["SubCode"]`).
+`subCode` is set when a library exception carries a sub-code (constructors with `subCode`, stored in `Data["SubCode"]`).
 
 ## Supported Exception Types
 
@@ -107,11 +107,12 @@ X-Correlation-Id: 00000000-0000-0000-0000-000000000000
 | `JsonException`                | 406         | `InvalidParameters`          |
 | `InvalidOperationException`    | 400         | `InvalidOperation`           |
 | `NotFoundException`            | 400         | `NotFound`                   |
-| `ConflictException`            | 400         | `Conflict`                   |
+| `FailedDependency`             | 400         | `FailedDependency`           |
+| `ConflictException`            | 409         | `Conflict`                   |
 | `BadRequestException`          | 400         | `BadRequest`                 |
 | `NotAuthorizedException`       | 401         | `NotAuthorized`              |
 | `ForbiddenException`           | 403         | `Forbidden`                  |
-| `IdentityUserManagerException` | 500         | `UnauthorizedClient`         |
+| `IdentityException`            | 500         | `UnauthorizedClient`         |
 | `HttpClientException`          | 400         | `InvalidClient`              |
 | `ImageNotFoundException`       | 400         | `ImageNotFound`              |
 | `Exception` (default)          | 500         | `InternalServerError`        |

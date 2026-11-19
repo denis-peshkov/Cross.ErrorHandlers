@@ -108,6 +108,21 @@ public class ErrorHandlerMiddleware
                 new ErrorModel
                 (
                     code: nameof(ErrorCodeEnum.NotFound),
+                    subCode: GetSubCode(ex),
+                    message: ex.Message,
+                    errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
+                ));
+        }
+        catch (FailedDependency ex)
+        {
+            LogInternalServerError(ex, httpContext);
+
+            await HandleExceptionAsync(
+                httpContext,
+                new ErrorModel
+                (
+                    code: nameof(ErrorCodeEnum.FailedDependency),
+                    subCode: GetSubCode(ex),
                     message: ex.Message,
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ));
@@ -121,10 +136,11 @@ public class ErrorHandlerMiddleware
                 new ErrorModel
                 (
                     code: nameof(ErrorCodeEnum.Conflict),
-                    subCode: ex.Data["SubCode"]?.ToString(),
+                    subCode: GetSubCode(ex),
                     message: ex.Message,
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
-                ));
+                ),
+                HttpStatusCode.Conflict);
         }
         catch (BadRequestException ex)
         {
@@ -135,6 +151,7 @@ public class ErrorHandlerMiddleware
                 new ErrorModel
                 (
                     code: nameof(ErrorCodeEnum.BadRequest),
+                    subCode: GetSubCode(ex),
                     message: ex.Message,
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ));
@@ -148,6 +165,7 @@ public class ErrorHandlerMiddleware
                 new ErrorModel
                 (
                     code: nameof(ErrorCodeEnum.NotAuthorized),
+                    subCode: GetSubCode(ex),
                     message: ex.Message,
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ),
@@ -162,12 +180,13 @@ public class ErrorHandlerMiddleware
                 new ErrorModel
                 (
                     code: nameof(ErrorCodeEnum.Forbidden),
+                    subCode: GetSubCode(ex),
                     message: ex.Message,
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ),
                 HttpStatusCode.Forbidden);
         }
-        catch (IdentityUserManagerException ex)
+        catch (IdentityException ex)
         {
             LogInternalServerError(ex, httpContext);
 
@@ -176,6 +195,7 @@ public class ErrorHandlerMiddleware
                 new ErrorModel
                 (
                     code: nameof(ErrorCodeEnum.UnauthorizedClient),
+                    subCode: GetSubCode(ex),
                     message: ex.Message,
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ),
@@ -196,6 +216,7 @@ public class ErrorHandlerMiddleware
                 new ErrorModel
                 (
                     code: nameof(ErrorCodeEnum.InvalidClient),
+                    subCode: GetSubCode(ex),
                     message: message,
                     errors: null
                 ));
@@ -209,6 +230,7 @@ public class ErrorHandlerMiddleware
                 new ErrorModel
                 (
                     code: nameof(ErrorCodeEnum.ImageNotFound),
+                    subCode: GetSubCode(ex),
                     message: ex.Message,
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ));
@@ -222,12 +244,18 @@ public class ErrorHandlerMiddleware
                 new ErrorModel
                 (
                     code: nameof(ErrorCodeEnum.InternalServerError),
+                    subCode: GetSubCode(ex),
                     message: "Internal Server Error from the custom middleware",
                     errors: new Dictionary<string, IEnumerable<string>>() { { EXCEPTION_TITLE, new[] { ex.ToString() } } }
                 ),
                 HttpStatusCode.InternalServerError);
         }
     }
+
+    private static string? GetSubCode(Exception ex) =>
+        ex.Data.Contains("SubCode")
+            ? ex.Data["SubCode"]?.ToString()
+            : null;
 
     private async Task HandleExceptionAsync(HttpContext context, ErrorModel errorModel, HttpStatusCode statusCode = HttpStatusCode.BadRequest)
     {

@@ -5,13 +5,23 @@
 public class ExceptionsTests
 {
     [Test]
-    public void ConflictException_Constructor_WithMessage_SetsMessage()
+    [TestCase(typeof(BadRequestException))]
+    [TestCase(typeof(ConflictException))]
+    [TestCase(typeof(FailedDependency))]
+    [TestCase(typeof(ForbiddenException))]
+    [TestCase(typeof(HttpClientException))]
+    [TestCase(typeof(HttpErrorException))]
+    [TestCase(typeof(IdentityException))]
+    [TestCase(typeof(ImageNotFoundException))]
+    [TestCase(typeof(NotAuthorizedException))]
+    [TestCase(typeof(NotFoundException))]
+    public void Exception_Constructor_WithMessage_DoesNotSetSubCode(Type exceptionType)
     {
         // Arrange
         var message = "Resource already exists";
 
         // Act
-        var exception = new ConflictException(message);
+        var exception = (Exception)Activator.CreateInstance(exceptionType, message)!;
 
         // Assert
         exception.Message.Should().Be(message);
@@ -19,19 +29,67 @@ public class ExceptionsTests
     }
 
     [Test]
-    public void ConflictException_Constructor_WithMessageAndSubCode_SetsMessageAndSubCode()
+    [TestCase(typeof(BadRequestException))]
+    [TestCase(typeof(ConflictException))]
+    [TestCase(typeof(FailedDependency))]
+    [TestCase(typeof(ForbiddenException))]
+    [TestCase(typeof(HttpClientException))]
+    [TestCase(typeof(HttpErrorException))]
+    [TestCase(typeof(IdentityException))]
+    [TestCase(typeof(ImageNotFoundException))]
+    [TestCase(typeof(NotAuthorizedException))]
+    [TestCase(typeof(NotFoundException))]
+    public void Exception_Constructor_WithMessageAndSubCode_SetsMessageAndSubCode(Type exceptionType)
     {
         // Arrange
         var message = "Resource already exists";
         var subCode = "DUPLICATE_EMAIL";
 
         // Act
-        var exception = new ConflictException(message, subCode);
+        var exception = (Exception)Activator.CreateInstance(exceptionType, message, subCode)!;
 
         // Assert
         exception.Message.Should().Be(message);
         exception.Data.Contains("SubCode").Should().BeTrue();
         exception.Data["SubCode"].Should().Be(subCode);
+    }
+
+    [Test]
+    [TestCase(typeof(BadRequestException))]
+    [TestCase(typeof(ConflictException))]
+    [TestCase(typeof(FailedDependency))]
+    [TestCase(typeof(ForbiddenException))]
+    [TestCase(typeof(HttpClientException))]
+    [TestCase(typeof(HttpErrorException))]
+    [TestCase(typeof(IdentityException))]
+    [TestCase(typeof(ImageNotFoundException))]
+    [TestCase(typeof(NotAuthorizedException))]
+    [TestCase(typeof(NotFoundException))]
+    public void Exception_Constructor_WithMessageSubCodeAndInnerException_SetsAllProperties(Type exceptionType)
+    {
+        // Arrange
+        var message = "test";
+        var subCode = "SUB";
+        var innerException = new Exception("Inner exception message");
+
+        // Act
+        var exception = (Exception)Activator.CreateInstance(exceptionType, message, subCode, innerException)!;
+
+        // Assert
+        exception.Message.Should().Be(message);
+        exception.Data["SubCode"].Should().Be(subCode);
+        exception.InnerException.Should().Be(innerException);
+    }
+
+    [Test]
+    public void HttpClientException_Constructor_WithErrorModelSubCode_CopiesSubCodeToData()
+    {
+        var error = new ErrorModel("InvalidClient", "REMOTE_SUB", "remote message", null);
+
+        var exception = new HttpClientException("client failed", error);
+
+        exception.Error.Should().Be(error);
+        exception.Data["SubCode"].Should().Be("REMOTE_SUB");
     }
 
     [Test]
@@ -56,14 +114,15 @@ public class ExceptionsTests
     [Test]
     [TestCase(typeof(BadRequestException))]
     [TestCase(typeof(ConflictException))]
+    [TestCase(typeof(FailedDependency))]
     [TestCase(typeof(ForbiddenException))]
     [TestCase(typeof(HttpClientException))]
     [TestCase(typeof(HttpErrorException))]
-    [TestCase(typeof(IdentityUserManagerException))]
+    [TestCase(typeof(IdentityException))]
     [TestCase(typeof(ImageNotFoundException))]
     [TestCase(typeof(NotAuthorizedException))]
     [TestCase(typeof(NotFoundException))]
-    public void HttpErrorException_Constructor_WithInnerException_SetsAllProperties1(Type exceptionType)
+    public void Exception_Constructor_WithInnerException_SetsAllProperties1(Type exceptionType)
     {
         // Arrange
         var message = "test";
@@ -81,14 +140,15 @@ public class ExceptionsTests
     [Test]
     [TestCase(typeof(BadRequestException))]
     [TestCase(typeof(ConflictException))]
+    [TestCase(typeof(FailedDependency))]
     [TestCase(typeof(ForbiddenException))]
     [TestCase(typeof(HttpClientException))]
     [TestCase(typeof(HttpErrorException))]
-    [TestCase(typeof(IdentityUserManagerException))]
+    [TestCase(typeof(IdentityException))]
     [TestCase(typeof(ImageNotFoundException))]
     [TestCase(typeof(NotAuthorizedException))]
     [TestCase(typeof(NotFoundException))]
-    public void HttpErrorException_Constructor_WithInnerException_SetsAllProperties(Type exceptionType)
+    public void Exception_Constructor_WithNullMessageAndInnerException_SetsDefaultMessage(Type exceptionType)
     {
         // Arrange
         string? message = null;
@@ -107,10 +167,11 @@ public class ExceptionsTests
     [Test]
     [TestCase(typeof(BadRequestException))]
     [TestCase(typeof(ConflictException))]
+    [TestCase(typeof(FailedDependency))]
     [TestCase(typeof(ForbiddenException))]
     [TestCase(typeof(HttpClientException))]
     [TestCase(typeof(HttpErrorException))]
-    [TestCase(typeof(IdentityUserManagerException))]
+    [TestCase(typeof(IdentityException))]
     [TestCase(typeof(ImageNotFoundException))]
     [TestCase(typeof(NotAuthorizedException))]
     [TestCase(typeof(NotFoundException))]

@@ -5,7 +5,8 @@
 /// </summary>
 /// <remarks>
 /// This exception is typically thrown when the client sends a request that doesn't meet the expected format or validation rules.
-/// It maps to HTTP 400 Bad Request status code.
+/// <see cref="Middleware.ErrorHandlerMiddleware"/> maps it to HTTP 400 Bad Request with error code <c>BadRequest</c>.
+/// An optional sub-code can be supplied and is stored in <see cref="Exception.Data"/> under the key <c>SubCode</c>.
 /// </remarks>
 public sealed class BadRequestException : Exception
 {
@@ -13,7 +14,16 @@ public sealed class BadRequestException : Exception
     /// Initializes a new instance of the <see cref="BadRequestException"/> class with a specified error message.
     /// </summary>
     /// <param name="message">The message that describes the error.</param>
-    public BadRequestException(string message) : base(message)
+    public BadRequestException(string? message) : this(message, null, null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BadRequestException"/> class with a specified error message and sub-code.
+    /// </summary>
+    /// <param name="message">The message that describes the error.</param>
+    /// <param name="subCode">A specific sub-code that provides additional error context. When not null, it is stored in <see cref="Exception.Data"/> under the key <c>SubCode</c>.</param>
+    public BadRequestException(string? message, string? subCode) : this(message, subCode, null)
     {
     }
 
@@ -24,5 +34,19 @@ public sealed class BadRequestException : Exception
     /// <param name="innerException">The exception that is the cause of the current exception.</param>
     public BadRequestException(string? message, Exception? innerException) : base(message, innerException)
     {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BadRequestException"/> class with a specified error message, sub-code, and a reference to the inner exception that is the cause of this exception.
+    /// </summary>
+    /// <param name="message">The message that describes the error.</param>
+    /// <param name="subCode">A specific sub-code that provides additional error context. When not null, it is stored in <see cref="Exception.Data"/> under the key <c>SubCode</c>.</param>
+    /// <param name="innerException">The exception that is the cause of the current exception.</param>
+    public BadRequestException(string? message, string? subCode, Exception? innerException) : base(message, innerException)
+    {
+        if (subCode != null)
+        {
+            Data.Add("SubCode", subCode);
+        }
     }
 }

@@ -13,7 +13,7 @@
 ![Activity](https://img.shields.io/github/commit-activity/m/denis-peshkov/Cross.ErrorHandlers)
 ![Activity](https://img.shields.io/github/commit-activity/y/denis-peshkov/Cross.ErrorHandlers)
 
-![TFM](https://img.shields.io/badge/TFM-net6.0%20%7C%20net7.0%20%7C%20net8.0%20%7C%20net9.0%20%7C%20net10.0-512BD4)
+![TFM](https://img.shields.io/badge/TFM-net6.0%20%7C%20net7.0%20%7C%20net8.0%20%7C%20net9.0%20%7C%20net10.0%20%7C%20net11.0-512BD4)
 
 # Cross.ErrorHandlers
 
